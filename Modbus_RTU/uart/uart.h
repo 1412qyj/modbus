@@ -5,7 +5,7 @@
 #include "../modbus/modbus.h"
 #define UART_BUF_SIZE_IN 1024
 #define UART_BUF_SIZE_OUT 1024
-#define COM_NAME "COM1"
+//#define COM_NAME "COM4"
 
 typedef struct{
 	DWORD  Band;
@@ -14,11 +14,21 @@ typedef struct{
 	BYTE  StopSize;
 }UartConfig_t;
 
+typedef struct{
+	char COMNAME[4];
+	UINT32 sizebufIn;
+	UINT32 sizebufOut;
+	UartConfig_t config;
+}self_uart_msg;
+
 HANDLE uart_open(const char *path, int sizeBufferIn, int sizeBufferOut);
 bool uart_config(HANDLE ComInfo, UartConfig_t *uartConfigBuf);
 int uart_buf_input(UartConfig_t *uartBuf);
 int sendToSlave(rtu_request_t *pMsg, HANDLE COM);
 int receiveFromSlave(rtu_respond_t *pMsg, HANDLE COM);
+HANDLE handleUartOutline(self_uart_msg *msg);
+int PrintuartMsg(self_uart_msg *msg);
+void uart_print_timeout(COMMTIMEOUTS *TimeOuts);
 
 
 #endif

@@ -2,12 +2,21 @@
 #include "uart\uart.h"
 #include "crc\crc.h"
 #include "check\check.h"
+#include <cstring>
+
+#define DEBUG
 
 unsigned char coilInfos[125];
 unsigned char registerInfos[256];
 
 int main()
 {
+	//输入串口名称
+	char COM_NAME[4] = {'\0'};
+	printf("input COM>");
+	cin >> COM_NAME;
+	while (getchar() != '\n'){}
+
 	memset(&coilInfos, 0, sizeof(coilInfos));
 	memset(&registerInfos, 0, sizeof(registerInfos));
 
@@ -28,20 +37,29 @@ int main()
 
 	//设置超时
 	COMMTIMEOUTS TimeOuts;
+
 	//设定读超时
 	TimeOuts.ReadIntervalTimeout = 100;
-	TimeOuts.ReadTotalTimeoutMultiplier = 500;
+	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 5000;
 	//设定写超时 
-	TimeOuts.WriteTotalTimeoutMultiplier = 50;
+	TimeOuts.WriteTotalTimeoutMultiplier = 0;
 	TimeOuts.WriteTotalTimeoutConstant = 2000;
 	//设置超时 
 	SetCommTimeouts(COMM, &TimeOuts);
 
-	//配置串口	
-	UartConfig_t uartBuf;
-	char chIn = 0;
+#ifdef DEBUG //打印超时
+	GetCommTimeouts(COMM, &TimeOuts);
+	uart_print_timeout(&TimeOuts);
+#endif
 
+	//配置串口	
+	UartConfig_t uartBuf;//串口的波特率
+	self_uart_msg uartMsg;//串口的所有属性
+	memset(&uartBuf, 0, sizeof(self_uart_msg));
+	char chIn = 0;
+	
+	DWORD errs = 0;
 	while (1)//循环询问用户配置串口
 	{
 		cout << "do you want the uart set as default(y equal default)";
@@ -88,6 +106,15 @@ int main()
 		}
 	}
 
+	//备份串口的属性
+	memcpy(&uartMsg.config, &uartBuf, sizeof(UartConfig_t));
+	memcpy(uartMsg.COMNAME, COM_NAME, 4);
+	uartMsg.sizebufIn = UART_BUF_SIZE_IN;
+	uartMsg.sizebufOut = UART_BUF_SIZE_OUT;
+
+	//打印串口数据
+	PrintuartMsg(&uartMsg);
+
 	//创建一个公共载体
 	rtu_request_t requestBuf;
 	rtu_respond_t respondBuf;
@@ -96,6 +123,10 @@ int main()
 
 	while (1)
 	{
+		//清空数据缓冲
+		memset(&coilInfos, 0, sizeof(coilInfos));
+		memset(&registerInfos, 0, sizeof(registerInfos));
+
 		//输入从机地址
 		input_slave(&requestBuf);
 
@@ -126,33 +157,71 @@ int main()
 		set_request_crc(&requestBuf, crc_modbus(requestBuf.request.data, get_request_length(&requestBuf) - 2));
 
 		//发送
-		sendToSlave(&requestBuf, COMM);
+		errs = sendToSlave(&requestBuf, COMM);
+
+#ifdef DEBUG
+		cout << errs << endl;
+#endif
+
+		if (errs == 5)//串口被拔出的错误
+		{
+			//关闭串口
+			CloseHandle(COMM);
+
+			COMM = handleUartOutline(&uartMsg);//获取新的串口
+
+			//设置超时 
+			SetCommTimeouts(COMM, &TimeOuts);
+		}
 
 		//打印发送数据
 		print_request(&requestBuf);
 
+#ifdef DEBUG //打印超时
+		GetCommTimeouts(COMM, &TimeOuts);
+		uart_print_timeout(&TimeOuts);
+#endif
 		//接收
-		receiveFromSlave(&respondBuf, COMM);
+		errs = receiveFromSlave(&respondBuf, COMM);
 
-		int ret = 0;
+#ifdef DEUBG
+		cout << errs << endl;
+#endif
+		if (errs == 995)//串口被拔出的错误
+		{
+			//关闭串口
+			CloseHandle(COMM);
+
+			COMM = handleUartOutline(&uartMsg);//获取新的串口
+
+			//设置超时 
+			SetCommTimeouts(COMM, &TimeOuts);
+		}
+		else if (errs == 0)//超时
+		{
+			cout << "timeout !" << endl;
+			continue;
+		}
+		
 		//解析接收数据
-		if ((ret = respond_check(&respondBuf, &requestBuf)) == Error_Ok)
+		if ((errs = respond_check(&respondBuf, &requestBuf)) == Error_Ok)
 		{	
 			//数据检查无误，打印
 			print_respond(&respondBuf);
 		}
 		else
 		{
-			cout << "errno: " << ret << endl;
+#ifdef DEBUG
+			cout << "errno: " << errs << endl;
+#endif
 			//print_respond(&respondBuf);
-			print_errno(ret, &respondBuf);
+			print_errno(errs, &respondBuf);
 		}
 		
-		memset(&coilInfos, 0, sizeof(coilInfos));
-		memset(&registerInfos, 0, sizeof(registerInfos));
+		
 	}
 
-	
+	system("pause");
 
 	return 0;
 }

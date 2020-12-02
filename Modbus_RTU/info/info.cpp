@@ -68,7 +68,7 @@ int input_begin_addr(rtu_request_t *pRequest)
 
 	while (1)
 	{
-		printf("input begin addr(0x00-0xff)>");
+		printf("input begin addr(0x0000-0xffff)>");
 		cin >> tmp;
 		while (getchar() != '\n'){}
 
