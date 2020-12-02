@@ -4,7 +4,7 @@
 #include "check\check.h"
 #include <cstring>
 
-#define DEBUG
+//#define DEBUG
 
 unsigned char coilInfos[125];
 unsigned char registerInfos[256];
@@ -127,6 +127,10 @@ int main()
 		memset(&coilInfos, 0, sizeof(coilInfos));
 		memset(&registerInfos, 0, sizeof(registerInfos));
 
+		//清空载体
+		memset(&requestBuf, 0, sizeof(requestBuf));
+		memset(&respondBuf, 0, sizeof(respondBuf));
+
 		//输入从机地址
 		input_slave(&requestBuf);
 
@@ -172,6 +176,8 @@ int main()
 
 			//设置超时 
 			SetCommTimeouts(COMM, &TimeOuts);
+
+			continue;
 		}
 
 		//打印发送数据
@@ -196,6 +202,8 @@ int main()
 
 			//设置超时 
 			SetCommTimeouts(COMM, &TimeOuts);
+
+			continue;
 		}
 		else if (errs == 0)//超时
 		{
