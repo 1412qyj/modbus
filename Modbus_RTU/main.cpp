@@ -123,6 +123,7 @@ int main()
 
 	while (1)
 	{
+		cout << "=========================================================================" << endl;
 		//Çå¿ÕÊý¾Ý»º³å
 		memset(&coilInfos, 0, sizeof(coilInfos));
 		memset(&registerInfos, 0, sizeof(registerInfos));
