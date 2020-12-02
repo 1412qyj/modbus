@@ -177,50 +177,6 @@ int calc_request_crc(rtu_request_t* m)
 }
 
 
-int get_response_length(rtu_respond_t* m)
-{
-	int len = 0;
-
-	switch (get_response_funcode(m))
-	{
-	case x01_read_coil:
-	case x03_read_registers:
-		/* ************
-		* slave(1)
-		* func(1)
-		* byte(1)
-		* data(byte)
-		* crc(2)
-		* ************/
-		len = 1 + 1 + 1 + m->response.x01.byte + 2;
-		break;
-	case x0f_write_coils:
-	case x10_write_registers:
-		/* ***********
-		* slave(1)
-		* func(1)
-		* addr(2)
-		* count(2)
-		* crc(2)
-		* **********/
-		len = 1 + 1 + 2 + 2 + 2;
-		break;
-	case x80_x01_read_coil:
-	case x80_x03_read_registers:
-	case x80_x0f_write_coils:
-	case x80_x10_write_registers:
-		/* ***********
-		* slave(1)
-		* exfunc(1)
-		* excode(1)
-		* crc(2)
-		* **********/
-		len = 1 + 1 + 1 + 2;
-		break;
-	}
-	return len;
-}
-
 int get_response_slave(rtu_respond_t* m)
 {
 	return (0xff & m->response.data[SLAVE_INDEX]);

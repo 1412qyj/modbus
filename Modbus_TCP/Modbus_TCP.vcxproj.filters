@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="tcp">
+      <UniqueIdentifier>{f9778062-78e2-442f-af7e-72bc316972c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="info">
+      <UniqueIdentifier>{9d936781-d643-4f92-8d55-e83e14f971cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modbus">
+      <UniqueIdentifier>{27ed287e-8040-4948-b019-386dba9156bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="check">
+      <UniqueIdentifier>{c0115e51-5936-4b9f-93a1-05e9554af9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{0c680d34-e852-48dc-9b88-86a3b09f47ab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="info\info.cpp">
+      <Filter>info</Filter>
+    </ClCompile>
+    <ClCompile Include="modbus\modbus.cpp">
+      <Filter>modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="check\check.cpp">
+      <Filter>check</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp\tcp.cpp">
+      <Filter>tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="data\data.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="info\info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="modbus\modbus.h">
+      <Filter>modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="check\check.h">
+      <Filter>check</Filter>
+    </ClInclude>
+    <ClInclude Include="tcp\tcp.h">
+      <Filter>tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="data\data.h">
+      <Filter>data</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
