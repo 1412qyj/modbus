@@ -95,7 +95,9 @@ int recvRequest(tcp_request_t *preq, int clientfd)
 	if (ret == 0)//客户端下线
 		return Error_ClientOutLine;
 	else if (ret < 0)//socket_error
+	{
 		return ret;
+	}
 	else//发送成功
 		return 0;
 }

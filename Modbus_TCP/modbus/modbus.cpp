@@ -23,7 +23,7 @@ int get_request_address(tcp_request_t* m)
 
 	if (m)
 	{
-		address += 0xff & (m->request.data[ADDRESS_INDEX0] << 8);
+		address += 0xff00 & (m->request.data[ADDRESS_INDEX0] << 8);
 		address |= 0xff & (m->request.data[ADDRESS_INDEX1] << 0);
 	}
 	return address;
@@ -129,6 +129,12 @@ int get_response_size(tcp_respond_t *m)
 			* count(2)
 			* **********/
 			ret = sizeof(tcp_head_t) + 1 + 2 + 2;
+			break;
+		case x80_x01_read_coil:
+		case x80_x03_read_registers:
+		case x80_x0f_write_coils:
+		case x80_x10_write_registers:
+			ret = sizeof(tcp_head_t) + 2;
 			break;
 		}
 	}

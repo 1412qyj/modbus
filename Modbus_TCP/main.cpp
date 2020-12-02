@@ -59,6 +59,23 @@ int main()
 			WSACleanup();//Release socket resource 
 			break;
 		}
+		else if (ret == -1)//网线断开
+		{
+			cout << "ether is outline----" << endl;
+			closesocket(clientSocket);
+
+			printf("trying to reconnect----\r");
+
+			while ((clientSocket = accept(socketfd, (SOCKADDR*)&clientAddr, &len)) == INVALID_SOCKET)
+			{
+				printf("trying to reconnect----\r");
+				Sleep(1000);
+			}
+
+			printf("\nreconnect successfully----\n");
+
+			continue;
+		}
 		else if (ret < 0)//接收出错
 		{
 			perror("recv:");
@@ -80,6 +97,7 @@ int main()
 			else//请求数据正确
 			{
 				//打印
+				cout << "recv >";
 				showhex((unsigned char *)&reqBuf, get_request_size(&reqBuf));
 			}	
 		}
@@ -101,6 +119,7 @@ int main()
 		}
 
 		//打印响应
+		cout << "send >";
 		showhex((unsigned char *)&resBuf, get_respond_size(&resBuf));
 
 

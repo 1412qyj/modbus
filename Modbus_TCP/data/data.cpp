@@ -41,8 +41,8 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{	
-		char address = get_request_address(m);
-		short count = get_request_count(m);
+		unsigned int address = get_request_address(m);
+		unsigned short count = get_request_count(m);
 		bool state = 0;
 		int index = 0;
 		int num = 0;
@@ -57,7 +57,7 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 			return 0;
 		}
 
-		if (count > MaxCoilCount || address + get_request_count(m) >= coil_end_addr)//起始地址+查询地址太大
+		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr)//起始地址+查询地址太大
 		{
 			set_response_funcode(n, x80_x01_read_coil);//设置差错功能码
 
@@ -102,7 +102,7 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{
-		unsigned char address = get_request_address(m);
+		unsigned short address = get_request_address(m);
 		unsigned short count = get_request_count(m);
 
 		//判断起始地址
@@ -115,7 +115,7 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能查询寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count) >= reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
 		{
 			set_response_funcode(n, x80_x03_read_registers);
 			set_respond_errornum(n, exception_x03);
@@ -144,8 +144,8 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{
-		char address = get_request_address(m);
-		short count = get_request_count(m);
+		unsigned short address = get_request_address(m);
+		unsigned short count = get_request_count(m);
 		bool state = 0;
 
 		//判断起始地址是否正确
@@ -159,7 +159,7 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 		}
 		
 		//起始地址+查询地址太大
-		if (count > MaxCoilCount || address + get_request_count(m) >= coil_end_addr)
+		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr)
 		{
 			set_response_funcode(n, x80_x0f_write_coils);//设置差错功能码
 
@@ -201,7 +201,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{
-		unsigned char address = get_request_address(m);
+		unsigned int address = get_request_address(m);
 		unsigned short count = get_request_count(m);
 
 		//判断起始地址
@@ -214,7 +214,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count) >= reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
 		{
 			set_response_funcode(n, x80_x10_write_registers);
 			set_respond_errornum(n, exception_x03);
