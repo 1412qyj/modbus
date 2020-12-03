@@ -46,24 +46,29 @@ int uart_buf_input(UartConfig_t *uartBuf)
 	int in = 0;
 
 	printf("Baud>");
-	cin >> in;
+	scanf("%d", &in);
 	uartBuf->Band = in;
 	while (getchar() != '\n'){}
+	memset(&in, 0, sizeof(in));
 
 	printf("Parity>");
-	cin >> in;
+	scanf("%d", &in);
 	uartBuf->Parity = in;
 	while (getchar() != '\n'){}
+	memset(&in, 0, sizeof(in));
+
 
 	printf("ByteSize>");
-	cin >> in;
+	scanf("%d", &in);
 	uartBuf->ByteSize = in;
 	while (getchar() != '\n'){}
+	memset(&in, 0, sizeof(in));
 
 	printf("StopSize>");
-	cin >> in;
-	uartBuf->StopSize = in;
+	scanf("%d", &in);
+	uartBuf->StopSize = in - 1;
 	while (getchar() != '\n'){}
+	memset(&in, 0, sizeof(in));
 
 	return 0;
 }
@@ -87,7 +92,7 @@ int sendToSlave(rtu_request_t *pMsg, HANDLE COM)
 
 		return errs;
 	}
-	//PurgeComm(COM, PURGE_TXCLEAR);//写完以后清空
+	PurgeComm(COM, PURGE_RXCLEAR | PURGE_TXCLEAR);//刚写完就清空读缓冲区
 
 	if (bufLen != realLen)
 		return -1;
@@ -105,7 +110,7 @@ int receiveFromSlave(rtu_respond_t *pMsg, HANDLE COM)
 	DWORD errs;
 	DWORD bufLen = sizeof(rtu_respond_t);
 
-	PurgeComm(COM, PURGE_RXCLEAR);//在读之前清空
+	
 	if (!ReadFile(COM, pMsg, bufLen, &errs, NULL))
 	{
 		errs = GetLastError();
@@ -113,7 +118,7 @@ int receiveFromSlave(rtu_respond_t *pMsg, HANDLE COM)
 		cout << "read COM failed" << endl;
 		memset(pMsg, 0, sizeof(rtu_respond_t));
 	}
-	
+	PurgeComm(COM, PURGE_RXCLEAR);//在读之后清空
 
 
 	return errs;
@@ -164,13 +169,30 @@ HANDLE handleUartOutline(self_uart_msg *msg)
 
 int PrintuartMsg(self_uart_msg *msg)
 {
+	float stopsize = 0.0f;
+
+	switch (msg->config.StopSize)
+	{
+	case 0:
+		stopsize = 1;
+		break;
+	case 1:
+		stopsize = 1.5;
+		break;
+	case 2:
+		stopsize = 2;
+		break;
+	default:
+		break;
+	}
+
 	cout << "=========================================" << endl;
 	printf("uart name: %s\n", msg->COMNAME);
 	printf("bufin: %d bufout: %d\n", msg->sizebufIn, msg->sizebufOut);
-	printf("baud: %d check: %d datasize: %d stop: %d\n", msg->config.Band,
+	printf("baud: %d check: %d datasize: %d stop: %.1f\n", msg->config.Band,
 		msg->config.Parity,
 		msg->config.ByteSize,
-		msg->config.StopSize);
+		stopsize);
 	cout << "=========================================" << endl;
 
 	return 0;

@@ -103,7 +103,7 @@ int check_byte(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	switch (get_request_funcode(pRequest))
 	{
 	case x01_read_coil:
-		return (get_response_byte(pRespond) == (get_request_count(pRequest) / 8 + (get_request_count(pRequest) % 8 == 0) ? 0 : 1));
+		return (get_response_byte(pRespond) == (int)((get_request_count(pRequest) + 7) / 8));
 		break;
 	case x03_read_registers:
 		return (get_response_byte(pRespond) == 2 * get_request_count(pRequest));

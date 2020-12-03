@@ -100,6 +100,7 @@ int main()
 
 		if (chIn != '#')
 		{
+			cout << "thanks for use RTU-slave" << endl;
 			system("pause");
 
 			return -1;
@@ -147,7 +148,7 @@ int main()
 		//如果是写线圈
 		if (get_request_funcode(&requestBuf) == x0f_write_coils)
 		{
-			set_request_byte(&requestBuf, get_request_count(&requestBuf) / 8 + (get_request_count(&requestBuf) % 8 == 0) ? 0 : 1);
+			set_request_byte(&requestBuf, (get_request_count(&requestBuf) + 7) / 8);
 			input_coils(&requestBuf);
 		}
 

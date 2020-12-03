@@ -43,7 +43,7 @@ int get_request_address(rtu_request_t* m)
 
 	if (m)
 	{
-		address += 0xff & (m->request.data[ADDRESS_INDEX0] << 8);
+		address += 0xff00 & (m->request.data[ADDRESS_INDEX0] << 8);
 		address |= 0xff & (m->request.data[ADDRESS_INDEX1] << 0);
 	}
 	return address;
@@ -66,7 +66,7 @@ int get_request_count(rtu_request_t* m)
 	{
 	case x01_read_coil:
 	case x03_read_registers:
-		count += 0xff & m->request.x01.count[0] << 8;
+		count += 0xff00 & m->request.x01.count[0] << 8;
 		count += 0xff & m->request.x01.count[1] << 0;
 		break;
 	case x0f_write_coils:
@@ -112,7 +112,7 @@ int set_request_byte(rtu_request_t* m, int byte)
 	{
 	case x0f_write_coils:
 	case x10_write_registers:
-		m->request.x10.byte = (byte & 0xff);
+		m->request.data[BYTES_INDEX] = (byte & 0xff);
 		break;
 	}
 	return Error_Ok;

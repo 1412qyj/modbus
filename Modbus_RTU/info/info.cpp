@@ -14,12 +14,12 @@ int input_slave(rtu_request_t *pRequest)
 	while (1)
 	{
 		printf("input slave>");
-		cin >> tmp;
+		scanf("%d", &tmp);
 		while (getchar() != '\n'){}
 
 		if (tmp > 0xff || tmp < 0x00)
 		{
-			printf("range 0x00-0xff!\n");
+			printf("range 0 - 255!\n");
 		}
 		else
 		{
@@ -42,7 +42,8 @@ int input_func(rtu_request_t *pRequest)
 	while (1)
 	{
 		printf("input func(1, 3, 15, 16)>");
-		cin >> tmp;
+		scanf("%d", &tmp);
+		
 		while (getchar() != '\n'){}
 
 		if (tmp == x01_read_coil || tmp == x03_read_registers || tmp == x0f_write_coils || tmp == x10_write_registers)
@@ -68,13 +69,13 @@ int input_begin_addr(rtu_request_t *pRequest)
 
 	while (1)
 	{
-		printf("input begin addr(0x0000-0xffff)>");
-		cin >> tmp;
+		printf("input begin addr(0 - 65535)>");
+		scanf("%d", &tmp);
 		while (getchar() != '\n'){}
 
 		if (tmp < 0x0000 || tmp > 0xffff)
 		{
-			printf("0x0000 - 0xffff!!\n");
+			printf("0 - 65535!!\n");
 		}
 		else
 		{
@@ -96,7 +97,7 @@ int input_count(rtu_request_t *pRequest)
 	while (1)
 	{
 		printf("input the elements count>");
-		cin >> tmp;
+		scanf("%d", &tmp);
 		while (getchar() != '\n'){}
 
 
@@ -131,16 +132,17 @@ int input_coils(rtu_request_t *pRequest)
 
 	memset(&coilInfos, 0, sizeof(coilInfos));
 
-	bool tmp = 0;
+	char tmp = 0;
 
 	for (int i = 0; i < get_request_count(pRequest); i++)
 	{
 		printf("input coil%d(Zero or NoZero)>", i);
-		cin >> tmp;
+		scanf("%c", &tmp);
+		while (getchar() != '\n'){}
 
-		if (tmp)//÷√1
+		if (tmp - '0')//÷√1
 		{
-			coilInfos[i / 9] = setOne(coilInfos[i / 9], i % 8);
+			coilInfos[i / 8] = setOne(coilInfos[i / 8], i % 8);
 		}
 		else
 		{
@@ -149,7 +151,7 @@ int input_coils(rtu_request_t *pRequest)
 	}
 
 	//ÃÓ≥‰
-	for (int i = 0; i < get_request_byte(pRequest); i++)
+	for (int i = 0; i <= get_request_byte(pRequest); i++)
 	{
 		pRequest->request.x0f.data[i] = coilInfos[i];//ÃÓ≥‰ ˝æ›”Ú
 	}
@@ -164,16 +166,29 @@ int input_registers(rtu_request_t *pRequest)
 
 	memset(&registerInfos, 0, sizeof(registerInfos));
 
-	short in;
+	int in;
 
 	for (int i = 0; i < get_request_count(pRequest); i++)
 	{
-		printf("input register %d >", i);
+		while (1)
+		{
+			printf("input register %d >", i);
 
-		cin >> in;
+			scanf("%d", &in);
 
-		registerInfos[2 * i] = ShortHig(in);
-		registerInfos[2 * i + 1] = ShortLow(in);
+			if (in > MaxRegisterValue || in < MinRegisterValue)
+			{
+				cout << "error val!!!(0-65535)" << endl;
+				continue;
+			}
+			else
+			{
+				registerInfos[2 * i] = ShortHig(in);
+				registerInfos[2 * i + 1] = ShortLow(in);
+
+				break;
+			}
+		}
 	}
 
 	//ÃÓ≥‰
@@ -300,6 +315,7 @@ int print_errno(int err, rtu_respond_t *m)
 			cout << "“Ï≥£÷Æ≤ªø…√Ë ˆµƒ¥ÌŒÛ" << endl;
 			break;
 		}
+		print_respond(m);
 		break;
 	default:
 		cout << "≤ªø…√Ë ˆµƒ¥ÌŒÛ" << endl;
