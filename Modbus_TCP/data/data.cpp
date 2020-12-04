@@ -102,8 +102,8 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{
-		unsigned short address = get_request_address(m);
-		unsigned short count = get_request_count(m);
+		unsigned int address = get_request_address(m);
+		unsigned int count = get_request_count(m);
 
 		//判断起始地址
 		if (address < reg_start_addr || address >= reg_end_addr)
@@ -115,7 +115,7 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能查询寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		if ((count > MaxRegisterCount) || ((address + count*8) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
 		{
 			set_response_funcode(n, x80_x03_read_registers);
 			set_respond_errornum(n, exception_x03);
@@ -131,7 +131,7 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 		set_response_byte(n, 2*count);
 	
 		//配置数据
-		for (int i = 0, j = GetRegIndex(address); i < count; i++, j++)
+		for (int i = 0, j = GetRegIndex(address); i < count*2; i++, j++)
 		{
 			n->response.x03.data[i] = regBuf[j];
 		}
@@ -214,7 +214,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		if ((count > MaxRegisterCount) || ((address + count*8) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
 		{
 			set_response_funcode(n, x80_x10_write_registers);
 			set_respond_errornum(n, exception_x03);
@@ -233,10 +233,25 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		set_response_count(n, get_request_count(m));
 
 		//配置内存
-		for (int i = GetRegIndex(address); i < GetRegIndex(address) + count; i++)
+		for (int i = GetRegIndex(address); i < GetRegIndex(address) + count*2; i++)
 		{
 			regBuf[i] = m->request.x10.data[i - GetRegIndex(address)];
 		}
+
+		return 0;
+	}
+
+	return Error_Ok;
+}
+
+int handleErrorFuncode(tcp_request_t *m, tcp_respond_t *n)
+{
+	if (m && n)
+	{
+		set_response_funcode(n, get_request_funcode(m)+0x80);//加0x80的差错码
+		n->response.data[ERRORNO_INDEX] = 0x01;//设置异常码
+
+		n->tcp_head.Length[1] = 0x03;//设置长度
 
 		return 0;
 	}

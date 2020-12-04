@@ -17,7 +17,7 @@ int get_request_size(tcp_request_t* m);
 unsigned short get_request_protocol(tcp_request_t *m);
 unsigned char get_request_unitId(tcp_request_t *m);
 int copy_req_to_res(tcp_request_t *m, tcp_respond_t *n);
-short get_request_length(tcp_request_t *m);
+unsigned short get_request_length(tcp_request_t *m);
 int get_request_count(tcp_request_t* m);
 int set_request_count(tcp_request_t* m);
 int set_respond_errornum(tcp_respond_t *m, int errornum);

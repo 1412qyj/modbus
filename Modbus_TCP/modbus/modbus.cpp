@@ -204,7 +204,7 @@ int copy_req_to_res(tcp_request_t *m, tcp_respond_t *n)
 	return Error_Ok;
 }
 
-short get_request_length(tcp_request_t *m)
+unsigned short get_request_length(tcp_request_t *m)
 {
 	if (m)
 	{
@@ -222,12 +222,12 @@ int get_request_count(tcp_request_t* m)
 	{
 	case x01_read_coil:
 	case x03_read_registers:
-		count += 0xff & m->request.x01.count[0] << 8;
+		count += 0xff00 & m->request.x01.count[0] << 8;
 		count += 0xff & m->request.x01.count[1] << 0;
 		break;
 	case x0f_write_coils:
 	case x10_write_registers:
-		count += 0xff & m->request.x10.count[0] << 8;
+		count += 0xff00 & m->request.x10.count[0] << 8;
 		count += 0xff & m->request.x10.count[1] << 0;
 		break;
 	}
@@ -337,6 +337,7 @@ int set_response_count(tcp_respond_t* m, int count)
 
 int get_respond_size(tcp_respond_t *m)
 {
+#if 0
 	if (m)
 	{
 		switch (get_response_funcode(m))
@@ -359,6 +360,11 @@ int get_respond_size(tcp_respond_t *m)
 			break;
 		}
 	}
-
+#else
+	if (m)
+	{
+		return MakeShort(m->tcp_head.Length[0], m->tcp_head.Length[1]) + 6;
+	}
+#endif
 	return Error_Ok;
 }

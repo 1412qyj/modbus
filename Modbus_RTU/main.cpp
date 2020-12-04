@@ -6,6 +6,8 @@
 unsigned char coilInfos[125];
 unsigned char registerInfos[256];
 
+
+
 int main()
 {
 	memset(&coilInfos, 0, sizeof(coilInfos));

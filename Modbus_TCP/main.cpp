@@ -53,7 +53,7 @@ int main()
 		ret = recvRequest(&reqBuf, clientSocket);
 		if (ret == Error_ClientOutLine)//客户端退出连接
 		{
-			cout << inet_ntoa(clientAddr.sin_addr) << " is outLine";
+			cout << inet_ntoa(clientAddr.sin_addr) << " is outLine" << endl;
 			closesocket(clientSocket);
 			closesocket(socketfd);//关闭套接字
 			WSACleanup();//Release socket resource 
@@ -88,11 +88,16 @@ int main()
 		}
 		else//接收成功
 		{
+			ret = check_request(&reqBuf);
 			//判断解析请求
-			if ((ret = check_request(&reqBuf)) != 0)
+			if (ret != 0 && ret != Error_InValidfuncode)
 			{
 				printErrorno(ret);//打印请求解析出错的结果
 				continue;//这次循环直接结束
+			}
+			else if (ret == Error_InValidfuncode)//错误的功能码
+			{
+				handleErrorFuncode(&reqBuf, &resBuf);
 			}
 			else//请求数据正确
 			{
@@ -102,8 +107,9 @@ int main()
 			}	
 		}
 
-		//填充响应
-		handleRequest(&reqBuf, &resBuf);
+		//功能码不错误的话，填充响应
+		if (ret != Error_InValidfuncode)
+			handleRequest(&reqBuf, &resBuf);
 
 		//发送响应
 		ret = sendRespond(&resBuf, clientSocket);

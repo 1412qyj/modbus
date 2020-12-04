@@ -15,6 +15,12 @@ int check_request(tcp_request_t *m)
 			return Error_InValidUnitId;
 		}
 
+		//检查功能码
+		if (!check_funcode(m))
+		{
+			return Error_InValidfuncode;
+		}
+
 		//检查Length
 		if (!check_length(m))
 		{
