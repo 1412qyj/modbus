@@ -57,7 +57,8 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 			return 0;
 		}
 
-		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr)//起始地址+查询地址太大
+		//起始地址+查询地址太大+或者count==0
+		if (count > MaxCoilCount || address + count > coil_end_addr || count == 0)
 		{
 			set_response_funcode(n, x80_x01_read_coil);//设置差错功能码
 
@@ -74,7 +75,7 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 		set_response_byte(n, GetCoilCount(count));
 
 		//CoilAddressToIndex：求地址对应的映射
-		for (int i = address;i <= address+count;i++)
+		for (int i = address; i <= address + count; i++)
 		{
 			if (GetCoilState(coilBuf, i))//coil是true
 			{
@@ -114,8 +115,8 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 			return 0;
 		}
 
-		//count > 一次能查询寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count*8) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		//count > 一次能查询寄存器数量的最大值 || 起始地址+查询地址太大
+		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || count == 0)
 		{
 			set_response_funcode(n, x80_x03_read_registers);
 			set_respond_errornum(n, exception_x03);
@@ -131,9 +132,10 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 		set_response_byte(n, 2*count);
 	
 		//配置数据
-		for (int i = 0, j = GetRegIndex(address); i < count*2; i++, j++)
+		for (int i = address; i < count+address; i++)
 		{
-			n->response.x03.data[i] = regBuf[j];
+			n->response.x03.data[2 * i] = regBuf[i] & 0xff00;//高位
+			n->response.x03.data[2 * i + 1] = regBuf[i] & 0xff;//低位
 		}
 	}
 
@@ -159,7 +161,7 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 		}
 		
 		//起始地址+查询地址太大
-		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr)
+		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr || count == 0)
 		{
 			set_response_funcode(n, x80_x0f_write_coils);//设置差错功能码
 
@@ -214,7 +216,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count*8) > reg_end_addr) || ((address - reg_start_addr) % 8 != 0))
+		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || count == 0)
 		{
 			set_response_funcode(n, x80_x10_write_registers);
 			set_respond_errornum(n, exception_x03);
@@ -233,9 +235,9 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		set_response_count(n, get_request_count(m));
 
 		//配置内存
-		for (int i = GetRegIndex(address); i < GetRegIndex(address) + count*2; i++)
+		for (int i = address; i < address + count; i++)
 		{
-			regBuf[i] = m->request.x10.data[i - GetRegIndex(address)];
+			regBuf[i] = MakeShort(m->request.x10.data[2 * (i - address)], m->request.x10.data[2 * (i - address) + 1]);
 		}
 
 		return 0;

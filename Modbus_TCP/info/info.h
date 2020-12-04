@@ -16,7 +16,7 @@ using namespace std;
 #define COUNT_INDEX0		3
 #define COUNT_INDEX1		4
 #define BYTES_INDEX			5
-#define Slave_Addr          0x11
+#define Slave_Addr          0x01
 
 #define showhex(data, len)						\
 do{												\
@@ -36,7 +36,7 @@ do{												\
 }while(0)
 
 typedef char CoilBuf_t[250];
-typedef char RegisterBuf_t[250];
+typedef short RegisterBuf_t[125];
 
 
 #define MakeShort(h,l)	( (((short)(h)&0xff)<<8) | ((short)(l)&0xff) )
@@ -56,8 +56,8 @@ typedef enum{
 }coil_addr;
 
 typedef enum{
-	reg_start_addr = 0x07D0,
-	reg_end_addr   = 0x1770
+	reg_start_addr = 0x0000,
+	reg_end_addr   = 0x007C
 }reg_addr;
 
 typedef enum

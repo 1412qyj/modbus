@@ -49,7 +49,7 @@ int check_protocol(tcp_request_t *m)
 {
 	if (m)
 	{
-		return (get_request_protocol(m) == 0x00);//
+		return (get_request_protocol(m) == 0x0000);//
 	}
 
 	return Error_Ok;
@@ -104,11 +104,11 @@ int check_count(tcp_request_t *m)
 		{
 		case x01_read_coil:
 		case x0f_write_coils:
-			return (get_request_count(m) <= 2000);
+			return ((get_request_count(m) <= 2000) && (get_request_count(m) > 0));
 			break;
 		case x03_read_registers:
 		case x10_write_registers:
-			return (get_request_count(m) <= 125);
+			return ((get_request_count(m) <= 125) && (get_request_count(m) > 0));
 			break;
 		}
 	}

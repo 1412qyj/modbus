@@ -90,7 +90,7 @@ int recvRequest(tcp_request_t *preq, int clientfd)
 {
 	if (nullptr == preq || clientfd <= 0)
 		return Error_Argc;
-
+#if 0
 	int ret = recv(clientfd, (char *)preq, sizeof(tcp_request_t), 0);
 	if (ret == 0)//客户端下线
 		return Error_ClientOutLine;
@@ -100,6 +100,10 @@ int recvRequest(tcp_request_t *preq, int clientfd)
 	}
 	else//发送成功
 		return 0;
+#else
+
+	return recv(clientfd, (char *)preq, sizeof(tcp_request_t), 0);
+#endif
 }
 
 int sendRespond(tcp_respond_t *pres, int clientfd)
@@ -107,10 +111,15 @@ int sendRespond(tcp_respond_t *pres, int clientfd)
 	if (nullptr == pres || clientfd <= 0)
 		return Error_Argc;
 
+#if 0
 	int ret = send(clientfd, (char *)pres, get_respond_size(pres), 0);
 
 	if (ret <= 0)
 		return ret;
 	else
 		return 0;
+#else
+	return send(clientfd, (char *)pres, get_respond_size(pres), 0);
+
+#endif
 }

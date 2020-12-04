@@ -49,9 +49,13 @@ int main()
 	//while轮询接收发送信息
 	while (1)
 	{
+		//清空
+		memset(&reqBuf, 0, sizeof(tcp_request_t));
+		memset(&resBuf, 0, sizeof(tcp_respond_t));
+
 		//接收请求
 		ret = recvRequest(&reqBuf, clientSocket);
-		if (ret == Error_ClientOutLine)//客户端退出连接
+		if (ret == 0)//客户端退出连接
 		{
 			cout << inet_ntoa(clientAddr.sin_addr) << " is outLine" << endl;
 			closesocket(clientSocket);
@@ -76,7 +80,7 @@ int main()
 
 			continue;
 		}
-		else if (ret < 0)//接收出错
+		else if (ret < -1)//接收出错
 		{
 			perror("recv:");
 
@@ -88,6 +92,13 @@ int main()
 		}
 		else//接收成功
 		{
+			//先比较数据长度
+			if ((ret - 6) != get_request_length(&reqBuf))//此时的ret是实际接收的长度
+			{
+				cout << "Error_InValidLength" << endl;
+				continue;
+			}
+
 			ret = check_request(&reqBuf);
 			//判断解析请求
 			if (ret != 0 && ret != Error_InValidfuncode)
@@ -129,9 +140,7 @@ int main()
 		showhex((unsigned char *)&resBuf, get_respond_size(&resBuf));
 
 
-		//清空
-		memset(&reqBuf, 0, sizeof(tcp_request_t));
-		memset(&resBuf, 0, sizeof(tcp_respond_t));
+
 	}
 
 
