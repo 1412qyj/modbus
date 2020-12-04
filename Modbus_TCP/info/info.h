@@ -57,7 +57,7 @@ typedef enum{
 
 typedef enum{
 	reg_start_addr = 0x0000,
-	reg_end_addr   = 0x007C
+	reg_end_addr   = 0x007D
 }reg_addr;
 
 typedef enum
