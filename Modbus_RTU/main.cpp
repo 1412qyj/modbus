@@ -13,6 +13,9 @@ int main()
 {
 	//输入串口名称
 	char COM_NAME[4] = {'\0'};
+
+AGAIN_INPUT_COM://跳转重新输入的位置
+	
 	printf("input COM>");
 	cin >> COM_NAME;
 	while (getchar() != '\n'){}
@@ -25,10 +28,8 @@ int main()
 	if (COMM == nullptr)
 	{ 
 		printf("open %s failed\n", COM_NAME);
-		
-		system("pause");
 
-		return -1;
+		goto AGAIN_INPUT_COM;//输入错误再重新输入
 	}
 	else
 	{
@@ -210,6 +211,13 @@ int main()
 		else if (errs == 0)//超时
 		{
 			cout << "timeout !" << endl;
+			continue;
+		}
+
+		//解析之前先判断实际的字节数和应该收到的字节数是否一致
+		if (errs != get_response_length(&respondBuf))
+		{
+			cout << "recv buf size is too long or too short" << endl;
 			continue;
 		}
 		

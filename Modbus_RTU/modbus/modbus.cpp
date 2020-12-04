@@ -262,7 +262,7 @@ int get_response_address(rtu_respond_t* m)
 		break;
 	case x0f_write_coils:
 	case x10_write_registers:
-		address += (0xff & m->response.x10.addr[0] << 8);
+		address += (0xff00 & m->response.x10.addr[0] << 8);
 		address += (0xff & m->response.x10.addr[1] << 0);
 		break;
 	}
