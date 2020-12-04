@@ -12,6 +12,7 @@ int check_byte(rtu_respond_t *pRespond, rtu_request_t *pRequest);
 int check_count(rtu_respond_t *pRespond, rtu_request_t *pRequest);
 int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest);
 int check_exception(rtu_respond_t *pRespond);
+int check_exception_crc(rtu_respond_t *m);
 
 
 

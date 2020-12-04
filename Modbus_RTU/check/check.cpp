@@ -16,6 +16,11 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	{
 		if (check_exception(pRespond) == 1)//判断是不是异常码
 		{
+			if (check_exception_crc(pRespond) != 1)//是异常码再判断CRC
+			{
+				return Error_InvalidResponseCrc;
+			}
+
 			return Error_Exception;
 		}
 		else//那就是啥也不是
@@ -145,4 +150,14 @@ int check_exception(rtu_respond_t *pRespond)
 	}
 
 	return -1;
+}
+
+int check_exception_crc(rtu_respond_t *m)
+{
+	if (m)
+	{
+		return ((0xffff & crc_modbus(m, 3)) == get_response_crc(m));
+	}
+
+	return Error_Ok;
 }

@@ -421,3 +421,21 @@ int get_exception_code(rtu_respond_t *m)
 	}
 	return -1;
 }
+
+//int check_exception_response(rtu_respond_t *frame)
+//{
+//	switch (get_response_funcode(frame))
+//	{
+//	case exception_x01:
+//	case exception_x02:
+//	case exception_x03:
+//	case exception_x04:
+//	case exception_x05:
+//	case exception_x06:
+//		break;
+//	default:
+//		return 0;
+//	}
+//	return (get_response_crc(frame) == calc_response_crc(frame));
+//}
+

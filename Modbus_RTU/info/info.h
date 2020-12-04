@@ -125,10 +125,10 @@ struct requestx
 
 struct exceptions
 {
-	unsigned slave;
-	unsigned func;
-	unsigned code;
-	unsigned crc[2];
+	unsigned char slave;
+	unsigned char func;
+	unsigned char code;
+	unsigned char crc[2];
 };
 
 
