@@ -132,10 +132,10 @@ int handle_x03(tcp_request_t *m, tcp_respond_t *n)
 		set_response_byte(n, 2*count);
 	
 		//配置数据
-		for (int i = address; i < count+address; i++)
+		for (int i = address, j = 0; i < count+address; i++, j++)
 		{
-			n->response.x03.data[2 * i] = regBuf[i] & 0xff00;//高位
-			n->response.x03.data[2 * i + 1] = regBuf[i] & 0xff;//低位
+			n->response.x03.data[2 * j] = (regBuf[i] & 0xff00) >> 8;//高位
+			n->response.x03.data[2 * j + 1] = regBuf[i] & 0xff;//低位
 		}
 	}
 
@@ -161,7 +161,7 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 		}
 		
 		//起始地址+查询地址太大
-		if (count > MaxCoilCount || address + get_request_count(m) > coil_end_addr || count == 0)
+		if (count > MaxCoilCount-32 || address + get_request_count(m) > coil_end_addr || count == 0)
 		{
 			set_response_funcode(n, x80_x0f_write_coils);//设置差错功能码
 
@@ -216,7 +216,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
-		if ((count > MaxRegisterCount) || ((address + count) > reg_end_addr) || count == 0)
+		if ((count > MaxRegisterCount-2) || ((address + count) > reg_end_addr) || count == 0)
 		{
 			set_response_funcode(n, x80_x10_write_registers);
 			set_respond_errornum(n, exception_x03);
