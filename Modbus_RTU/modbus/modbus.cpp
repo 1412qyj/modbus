@@ -119,7 +119,6 @@ int set_request_byte(rtu_request_t* m, int byte)
 }
 
 
-
 int get_request_crc(rtu_request_t* m)
 {
 	int crc = 0;
