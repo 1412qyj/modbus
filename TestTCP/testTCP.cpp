@@ -5,6 +5,7 @@
 #include "../Modbus_TCP/info/info.h"
 #include "../Modbus_TCP/modbus/modbus.h"
 #define INI_PATH "../Modbus_TCP/tcp_test.ini"
+#define MAX_PATH 1024
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestTCP
@@ -15,6 +16,8 @@ namespace TestTCP
 		
 		TEST_METHOD(TCP)
 		{
+			int a = 0;
+
 			// TODO:  在此输入测试代码
 			auto char_to_hex = [](uint8_t *str){
 				int   num[16] = { 0 };
@@ -36,6 +39,7 @@ namespace TestTCP
 				return result;
 			};
 
+
 			//ini读取的buffer
 			char ini_request[MAX_PATH] = { '\0' };
 			char ini_respond[MAX_PATH] = { '\0' };
@@ -54,10 +58,13 @@ namespace TestTCP
 			char sectionName[20] = { '\0' };
 
 			//两个报文的结构体
-			tcp_request_t rtu_request;
-			tcp_respond_t rtu_respond;
-			memset(&rtu_request, 0, sizeof(tcp_request_t));
-			memset(&rtu_respond, 0, sizeof(tcp_respond_t));
+			tcp_request_t tcp_request;
+			tcp_respond_t tcp_respond;
+			tcp_respond_t tcp_respond_compare;
+			memset(&tcp_request, 0, sizeof(tcp_request_t));
+			memset(&tcp_respond, 0, sizeof(tcp_respond_t));
+			memset(&tcp_respond_compare, 0, sizeof(tcp_respond_t));
+
 
 			//循环变量
 			int i = 0;
@@ -84,11 +91,13 @@ namespace TestTCP
 
 			sstr_sectionNames << sectionNames;
 
+
 			while (sstr_sectionNames >> sectionName)//每有一个章节就会循环一次
 			{
 				//清空结构体
-				memset(&rtu_request, 0, sizeof(tcp_request_t));
-				memset(&rtu_respond, 0, sizeof(tcp_respond_t));
+				memset(&tcp_request, 0, sizeof(tcp_request_t));
+				memset(&tcp_respond, 0, sizeof(tcp_respond_t));
+				memset(&tcp_respond_compare, 0, sizeof(tcp_respond_t));
 
 				//清空ini文件载体
 				memset(ini_request, 0, sizeof(ini_request));
@@ -102,40 +111,106 @@ namespace TestTCP
 				ini_respondlen = GetPrivateProfileIntA(sectionName, "responselen", 0, INI_PATH);
 				ini_ret = GetPrivateProfileIntA(sectionName, "return", 0, INI_PATH);
 
-
-				ptmp = ini_respond;
-
-				i = 0;
-				while ((pbuf = strtok(ptmp, " ")) != nullptr)
-				{
-					rtu_respond.response.data[i] = char_to_hex((uint8_t *)pbuf);
-
-					i++;
-					ptmp = nullptr;
-				}
-
-
 				ptmp = ini_request;
 				i = 0;
 				//先填充request
 				while ((pbuf = strtok(ptmp, " ")) != nullptr)
 				{
-					rtu_request.request.data[i] = char_to_hex((uint8_t *)pbuf);
+					switch (i)
+					{
+					case 0:
+						tcp_request.tcp_head.tranId[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 1:
+						tcp_request.tcp_head.tranId[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 2:
+						tcp_request.tcp_head.ProtoId[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 3:
+						tcp_request.tcp_head.ProtoId[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 4:
+						tcp_request.tcp_head.Length[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 5:
+						tcp_request.tcp_head.Length[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 6:
+						tcp_request.tcp_head.UnitId = char_to_hex((uint8_t *)pbuf);
+						break;
+					default:
+						tcp_request.request.data[i - 7] = char_to_hex((uint8_t *)pbuf);
+						break;
+					}
+
+					
+					i++;
+					ptmp = nullptr;
+				}
+				
+				pbuf = nullptr;
+				ptmp = ini_respond;
+				i = 0;
+				//再填充respond
+				while ((pbuf = strtok(ptmp, " ")) != nullptr)
+				{
+					switch (i)
+					{
+					case 0:
+						tcp_respond.tcp_head.tranId[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 1:
+						tcp_respond.tcp_head.tranId[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 2:
+						tcp_respond.tcp_head.ProtoId[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 3:
+						tcp_respond.tcp_head.ProtoId[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 4:
+						tcp_respond.tcp_head.Length[0] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 5:
+						tcp_respond.tcp_head.Length[1] = char_to_hex((uint8_t *)pbuf);
+						break;
+					case 6:
+						tcp_respond.tcp_head.UnitId = char_to_hex((uint8_t *)pbuf);
+						break;
+					default:
+						tcp_respond.response.data[i - 7] = char_to_hex((uint8_t *)pbuf);
+						break;
+					}
+
+
 					i++;
 					ptmp = nullptr;
 				}
 				i = 0;
 
-
 				//测试函数在此
+				//第一步验证主机发送的报文是否正确
+				result = check_request(&tcp_request);
+				if (result != 0 && result != Error_InValidfuncode)//这种情况下不需要回馈响应
+				{
+					Assert::AreEqual(ini_ret, result);
+				}
+				else if (result == Error_InValidfuncode)//功能码出错进行异常处理
+				{
 
-				Assert::AreEqual(result, ini_ret);
+				}
+				else//正常回馈响应
+				{
+					//填充compare结构体
+					handleRequest(&tcp_request, &tcp_respond_compare);
 
+					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
+				}
 
 				sectionCount++;
+
 			}
-
-
 		}
 
 

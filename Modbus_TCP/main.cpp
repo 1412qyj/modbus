@@ -3,8 +3,8 @@
 #include "check\check.h"
 #include "data\data.h"
 
-CoilBuf_t coilBuf;
-RegisterBuf_t regBuf;
+extern CoilBuf_t coilBuf;
+extern RegisterBuf_t regBuf;
 
 int main()
 {

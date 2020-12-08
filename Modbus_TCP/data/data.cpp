@@ -1,7 +1,7 @@
 #include "data.h"
 
-extern CoilBuf_t coilBuf;
-extern RegisterBuf_t regBuf;
+CoilBuf_t coilBuf;
+RegisterBuf_t regBuf;
 int handleRequest(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
