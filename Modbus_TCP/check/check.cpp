@@ -1,5 +1,6 @@
 #include "check.h"
 #include "../modbus/modbus.h"
+
 int check_request(tcp_request_t *m)
 {
 	if (m)
