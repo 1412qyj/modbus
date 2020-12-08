@@ -227,14 +227,15 @@ int get_response_slave(rtu_respond_t* m)
 {
 	return (0xff & m->response.data[SLAVE_INDEX]);
 }
-int set_response_slave(rtu_respond_t* m, int slave)
-{
-	if (m)
-	{
-		m->response.data[SLAVE_INDEX] = (0xff & slave);
-	}
-	return Error_Ok;
-}
+
+//int set_response_slave(rtu_respond_t* m, int slave)
+//{
+//	if (m)
+//	{
+//		m->response.data[SLAVE_INDEX] = (0xff & slave);
+//	}
+//	return Error_Ok;
+//}
 
 int get_response_funcode(rtu_respond_t* m)
 {
@@ -244,14 +245,15 @@ int get_response_funcode(rtu_respond_t* m)
 	}
 	return 0xff;
 }
-int set_response_funcode(rtu_respond_t* m, int funtion)
-{
-	if (m)
-	{
-		m->response.data[FUNCTION_INDEX] = (0xff & funtion);
-	}
-	return Error_Ok;
-}
+
+//int set_response_funcode(rtu_respond_t* m, int funtion)
+//{
+//	if (m)
+//	{
+//		m->response.data[FUNCTION_INDEX] = (0xff & funtion);
+//	}
+//	return Error_Ok;
+//}
 
 int get_response_address(rtu_respond_t* m)
 {
@@ -271,21 +273,21 @@ int get_response_address(rtu_respond_t* m)
 	return address;
 }
 
-int set_response_address(rtu_respond_t* m, int address)
-{
-	switch (get_response_funcode(m))
-	{
-	case x01_read_coil:
-	case x03_read_registers:
-		break;
-	case x0f_write_coils:
-	case x10_write_registers:
-		m->response.x10.addr[0] = (0xff & (address >> 8));
-		m->response.x10.addr[1] = (0xff & (address >> 0));
-		break;
-	}
-	return Error_Ok;
-}
+//int set_response_address(rtu_respond_t* m, int address)
+//{
+//	switch (get_response_funcode(m))
+//	{
+//	case x01_read_coil:
+//	case x03_read_registers:
+//		break;
+//	case x0f_write_coils:
+//	case x10_write_registers:
+//		m->response.x10.addr[0] = (0xff & (address >> 8));
+//		m->response.x10.addr[1] = (0xff & (address >> 0));
+//		break;
+//	}
+//	return Error_Ok;
+//}
 
 int get_response_count(rtu_respond_t* m)
 {
@@ -308,24 +310,26 @@ int get_response_count(rtu_respond_t* m)
 	return count;
 
 }
-int set_response_count(rtu_respond_t* m, int count)
-{
-	switch (get_response_funcode(m))
-	{
-	case x01_read_coil:
-		m->response.x01.byte = 0xff & (count / 8);
-		break;
-	case x03_read_registers:
-		m->response.x01.byte = 0xff & (count * 2);
-		break;
-	case x0f_write_coils:
-	case x10_write_registers:
-		m->response.x10.count[0] = 0xff & (count >> 8);
-		m->response.x10.count[1] = 0xff & (count >> 0);
-		break;
-	}
-	return Error_Ok;
-}
+
+
+//int set_response_count(rtu_respond_t* m, int count)
+//{
+//	switch (get_response_funcode(m))
+//	{
+//	case x01_read_coil:
+//		m->response.x01.byte = 0xff & (count / 8);
+//		break;
+//	case x03_read_registers:
+//		m->response.x01.byte = 0xff & (count * 2);
+//		break;
+//	case x0f_write_coils:
+//	case x10_write_registers:
+//		m->response.x10.count[0] = 0xff & (count >> 8);
+//		m->response.x10.count[1] = 0xff & (count >> 0);
+//		break;
+//	}
+//	return Error_Ok;
+//}
 
 int get_response_byte(rtu_respond_t* m)
 {
@@ -340,17 +344,17 @@ int get_response_byte(rtu_respond_t* m)
 	}
 	return byte;
 }
-int set_response_byte(rtu_respond_t* m, int byte)
-{
-	switch (get_response_funcode(m))
-	{
-	case x01_read_coil:
-	case x03_read_registers:
-		m->response.x01.byte = (0xff & byte);
-		break;
-	}
-	return Error_Ok;
-}
+//int set_response_byte(rtu_respond_t* m, int byte)
+//{
+//	switch (get_response_funcode(m))
+//	{
+//	case x01_read_coil:
+//	case x03_read_registers:
+//		m->response.x01.byte = (0xff & byte);
+//		break;
+//	}
+//	return Error_Ok;
+//}
 
 int get_request_length(rtu_request_t* m)
 {
@@ -415,29 +419,5 @@ int get_response_crc(rtu_respond_t* m)
 	return crc;
 }
 
-int get_exception_code(rtu_respond_t *m)
-{
-	if (m)
-	{
-		return (0xff & m->response.exc.code);
-	}
-	return -1;
-}
 
-//int check_exception_response(rtu_respond_t *frame)
-//{
-//	switch (get_response_funcode(frame))
-//	{
-//	case exception_x01:
-//	case exception_x02:
-//	case exception_x03:
-//	case exception_x04:
-//	case exception_x05:
-//	case exception_x06:
-//		break;
-//	default:
-//		return 0;
-//	}
-//	return (get_response_crc(frame) == calc_response_crc(frame));
-//}
 

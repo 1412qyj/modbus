@@ -70,8 +70,6 @@ typedef enum
 	exception_x02 = 0x02,
 	exception_x03 = 0x03,
 	exception_x04 = 0x04,
-	exception_x05 = 0x05,
-	exception_x06 = 0x06,
 }exception_code_t;
 
 typedef enum
@@ -94,7 +92,8 @@ typedef enum
 	Error_InvalidResponseValue = -46,
 	Error_InvalidResponseByte = -47,
 	Error_InvalidResponseCrc = -48,
-	Error_Exception = -49
+	Error_Exception = -49,
+	Error_InvalidExceptionCode = -50
 }ErrorCode_t;
 
 
@@ -186,10 +185,11 @@ int input_func(rtu_request_t *pRequest);
 int input_begin_addr(rtu_request_t *pRequest);
 int input_count(rtu_request_t *pRequest);
 int input_coils(rtu_request_t *pRequest);
-char setOne(char p, int count);
-char setZero(char p, int count);
 int input_registers(rtu_request_t *pRequest);
 int print_request(rtu_request_t *pRequest);
 int print_respond(rtu_respond_t *pResponse);
 int print_errno(int, rtu_respond_t *m);
+char setOne(char p, int count);
+char setZero(char p, int count);
+
 #endif

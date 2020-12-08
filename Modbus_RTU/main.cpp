@@ -217,7 +217,7 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 		//解析之前先判断实际的字节数和应该收到的字节数是否一致
 		if (errs != get_response_length(&respondBuf))
 		{
-			cout << "recv buf size is too long or too short" << endl;
+			cout << "data format error" << endl;
 			continue;
 		}
 		

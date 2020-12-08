@@ -200,15 +200,7 @@ int input_registers(rtu_request_t *pRequest)
 	return 0;
 }
 
-char setOne(char p, int count)
-{
-	return p | (0x1 << count);
-}
 
-char setZero(char p, int count)
-{
-	return p & ~(0x1 << count);
-}
 
 int print_request(rtu_request_t *pRequest)
 {
@@ -219,7 +211,7 @@ int print_request(rtu_request_t *pRequest)
 
 	for (int i = 0; i < get_request_length(pRequest); i++)
 	{
-		printf("%02x  ", pRequest->request.data[i]);
+		printf("%02x ", pRequest->request.data[i]);
 	}
 
 	putchar('\n');
@@ -235,7 +227,7 @@ int print_respond(rtu_respond_t *pResponse)
 	cout << "recv>" << endl;
 	for (int i = 0; i < get_response_length(pResponse); i++)
 	{
-		printf("%02x  ", pResponse->response.data[i]);
+		printf("%02x ", pResponse->response.data[i]);
 	}
 
 	putchar('\n');
@@ -317,10 +309,23 @@ int print_errno(int err, rtu_respond_t *m)
 		}
 		print_respond(m);
 		break;
+	case Error_InvalidExceptionCode:
+		cout << "Error_InvalidExceptionCode" << endl;
+		break;
 	default:
 		cout << "²»¿ÉÃèÊöµÄ´íÎó" << endl;
 		break;
 	}
 
 	return 0;
+}
+
+char setOne(char p, int count)
+{
+	return p | (0x1 << count);
+}
+
+char setZero(char p, int count)
+{
+	return p & ~(0x1 << count);
 }

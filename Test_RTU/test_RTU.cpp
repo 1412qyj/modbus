@@ -48,40 +48,55 @@ namespace Test_RTU
 				return result;
 			};
 			
+			//ini读取的buffer
 			char ini_request[MAX_PATH] = {'\0'};
 			char ini_respond[MAX_PATH] = {'\0'};
 			int ini_requestlen = 0;
 			int ini_respondlen = 0;
 			int ini_ret = 0;
+
+			//所有章节的名称
 			char sectionNames[MAX_PATH];
 			GetPrivateProfileSectionNamesA(sectionNames, sizeof(sectionNames), INI_PATH);
-			char *ptmp = sectionNames;
-			char *sectionName[MAX_PATH] = {nullptr};
 
-			for (int i = 0; i < MAX_PATH; i++)
-			{
-				if (sectionNames[i] == '\0' && sectionNames[i + 1] == '\0')
-				{
-					break;
-				}
+			//章节数量
+			int sectionCount = 0;
 
-				if (sectionNames[i] == '\0' && sectionNames[i + 1] != '\0')
-				{
-					sectionNames[i] = ' ';
-				}
-			}
+			//一个章节的长度
+			char sectionName[20] = { '\0' };
 
+			//两个报文的结构体
 			rtu_request_t rtu_request;
 			rtu_respond_t rtu_respond;
 			memset(&rtu_request, 0, sizeof(rtu_request_t));
 			memset(&rtu_respond, 0, sizeof(rtu_respond_t));
-			int i = 0;
-			uint8_t buf[3];
-			int sectionCount = 0;
-			int result = 0;
-			char *pbuf = nullptr;
 
-			while ((sectionName[sectionCount] = strtok(ptmp, " ")) != nullptr)//每有一个章节就会循环一次
+			//循环变量
+			int i = 0;
+
+			//执行结果
+			int result = 0;
+
+			//报文提取辅助变量
+			char *pbuf = nullptr;
+			char *ptmp = nullptr;
+
+			//流
+			stringstream sstr_sectionNames;
+		
+
+			for (int i = 0; i < MAX_PATH; i++)
+			{
+				if (sectionNames[i] == '\0' && sectionNames[i + 1] == '\0')
+					break;
+
+				if (sectionNames[i] == '\0' && sectionNames[i + 1] != '\0')
+					sectionNames[i] = ' ';
+			}
+
+			sstr_sectionNames << sectionNames;
+
+			while (sstr_sectionNames >> sectionName)//每有一个章节就会循环一次
 			{
 				//清空结构体
 				memset(&rtu_request, 0, sizeof(rtu_request_t));
@@ -93,11 +108,11 @@ namespace Test_RTU
 
 
 				//获取ini文件的数据
-				GetPrivateProfileStringA(sectionName[sectionCount], "request", "", ini_request, MAX_PATH, INI_PATH);
-				ini_requestlen = GetPrivateProfileIntA(sectionName[sectionCount], "requestlen", 0, INI_PATH);
-				GetPrivateProfileStringA(sectionName[sectionCount], "response", "", ini_respond, MAX_PATH, INI_PATH);
-				ini_respondlen = GetPrivateProfileIntA(sectionName[sectionCount], "responselen", 0, INI_PATH);
-				ini_ret = GetPrivateProfileIntA(sectionName[sectionCount], "return", 0, INI_PATH);
+				GetPrivateProfileStringA(sectionName, "request", "", ini_request, MAX_PATH, INI_PATH);
+				ini_requestlen = GetPrivateProfileIntA(sectionName, "requestlen", 0, INI_PATH);
+				GetPrivateProfileStringA(sectionName, "response", "", ini_respond, MAX_PATH, INI_PATH);
+				ini_respondlen = GetPrivateProfileIntA(sectionName, "responselen", 0, INI_PATH);
+				ini_ret = GetPrivateProfileIntA(sectionName, "return", 0, INI_PATH);
 
 
 				ptmp = ini_respond;
@@ -127,10 +142,13 @@ namespace Test_RTU
 				result = respond_check(&rtu_respond, &rtu_request);
 				Assert::AreEqual(result, ini_ret);
 
-				ptmp = nullptr;
+				
 				sectionCount++;
 			}
 
+			//测试null
+			result = respond_check(nullptr, nullptr);
+			Assert::AreEqual(result, -1);
 		}
 
 	};

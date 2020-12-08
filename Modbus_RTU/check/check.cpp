@@ -21,6 +21,11 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 				return Error_InvalidResponseCrc;
 			}
 
+			if (check_exception_excode(pRespond) != 1)//再判断错误码是否存在
+			{
+				return Error_InvalidExceptionCode;
+			}
+
 			return Error_Exception;
 		}
 		else//那就是啥也不是
@@ -111,7 +116,7 @@ int check_byte(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 		return (get_response_byte(pRespond) == (int)((get_request_count(pRequest) + 7) / 8));
 		break;
 	case x03_read_registers:
-		return (get_response_byte(pRespond) == 2 * get_request_count(pRequest));
+		return (get_response_byte(pRespond) == 2 * (int)get_request_count(pRequest));
 		break;
 	}
 
@@ -157,6 +162,24 @@ int check_exception_crc(rtu_respond_t *m)
 	if (m)
 	{
 		return ((0xffff & crc_modbus(m, 3)) == get_response_crc(m));
+	}
+
+	return Error_Ok;
+}
+
+int check_exception_excode(rtu_respond_t *m)
+{
+	if (m)
+	{
+		char code = m->response.exc.code;
+		if (code == exception_x01 || code == exception_x02 || code == exception_x03 || code == exception_x04)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	return Error_Ok;
