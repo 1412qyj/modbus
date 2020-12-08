@@ -4,9 +4,11 @@
 #include <Windows.h>
 #include <iostream>
 #include <cstdint>
+#include <vector>
+#include <iterator>
 using namespace std;
 
-#define PATH "../Test_RTU/config.ini"
+#define PATH "../Modbus_RTU/config.ini"
 
 uint16_t ChangeNum(uint8_t* str)
 {
@@ -31,44 +33,13 @@ uint16_t ChangeNum(uint8_t* str)
 
 int main()
 {
-	uint8_t p[] = "ae";
-	cout << ChangeNum(p) << endl;
-	printf("%02x\n", ChangeNum(p));
-	
-	string str = "01,01,00,01,00,11";
-	
-	int ret = 0;
-	while (ret = str.find(',', ret))
-	{
-		if (ret == -1)
-			break;
-
-		str.replace(ret, 1, 1, ' ');
-	}
-
-	stringstream sstr;
-	sstr << str;
 	int i = 0;
-	char nums[6];
-	int j = 0;
+	int j = 3;
 
-	cout << str << endl;
-
-	while (sstr >> str)
-	{
-		nums[j] = ChangeNum((uint8_t *)str.c_str());
-
-		j++;
+	while (j--)
 		i++;
 
-	}
-
-	for (int i = 0; i < 6; i++)
-		printf("%02x\t", nums[i]);
-
-
-	puts("");
-
+	j = 0;
 
 	system("pause");
 

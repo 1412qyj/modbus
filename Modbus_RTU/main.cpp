@@ -6,8 +6,8 @@
 
 //#define DEBUG
 
-unsigned char coilInfos[125];
-unsigned char registerInfos[256];
+extern unsigned char coilInfos[125];
+extern unsigned char registerInfos[256];
 
 int main()
 {

@@ -60,7 +60,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>../Modbus_RTU/Debug/crc.obj;../Modbus_RTU/Debug/check.obj;../Modbus_RTU/Debug/modbus.obj;../Modbus_RTU/Debug/info.obj;../Modbus_RTU/Debug/main.obj;../Modbus_RTU/Debug/uart.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../Modbus_RTU/Debug/crc.obj;../Modbus_RTU/Debug/check.obj;../Modbus_RTU/Debug/modbus.obj;../Modbus_RTU/Debug/info.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Xdcmake>
       <SuppressStartupBanner>x</SuppressStartupBanner>

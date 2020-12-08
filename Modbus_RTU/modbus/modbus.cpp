@@ -1,6 +1,9 @@
 #include "modbus.h"
 #include "../crc/crc.h"
 
+
+unsigned char coilInfos[125];
+unsigned char registerInfos[256];
 int set_request_slave(rtu_request_t* m, int slave)
 {
 	if (m)
