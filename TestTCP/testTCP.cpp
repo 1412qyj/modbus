@@ -18,7 +18,6 @@ namespace TestTCP
 		{
 			int a = 0;
 
-			// TODO:  在此输入测试代码
 			auto char_to_hex = [](uint8_t *str){
 				int   num[16] = { 0 };
 				int   count = 1;
@@ -94,6 +93,7 @@ namespace TestTCP
 
 			while (sstr_sectionNames >> sectionName)//每有一个章节就会循环一次
 			{
+
 				//清空结构体
 				memset(&tcp_request, 0, sizeof(tcp_request_t));
 				memset(&tcp_respond, 0, sizeof(tcp_respond_t));
@@ -113,6 +113,7 @@ namespace TestTCP
 
 				ptmp = ini_request;
 				i = 0;
+
 				//先填充request
 				while ((pbuf = strtok(ptmp, " ")) != nullptr)
 				{
@@ -144,11 +145,11 @@ namespace TestTCP
 						break;
 					}
 
-					
+
 					i++;
 					ptmp = nullptr;
 				}
-				
+
 				pbuf = nullptr;
 				ptmp = ini_respond;
 				i = 0;
@@ -189,16 +190,22 @@ namespace TestTCP
 				}
 				i = 0;
 
+
 				//测试函数在此
 				//第一步验证主机发送的报文是否正确
 				result = check_request(&tcp_request);
+
+				Assert::AreEqual(result, ini_ret);//无论如何都有一个check返回值
+
 				if (result != 0 && result != Error_InValidfuncode)//这种情况下不需要回馈响应
 				{
-					Assert::AreEqual(ini_ret, result);
+					//啥也不干
 				}
 				else if (result == Error_InValidfuncode)//功能码出错进行异常处理
 				{
+					handleErrorFuncode(&tcp_request, &tcp_respond_compare);
 
+					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
 				}
 				else//正常回馈响应
 				{
@@ -208,9 +215,12 @@ namespace TestTCP
 					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
 				}
 
-				sectionCount++;
 
+
+
+				sectionCount++;//大循环结尾
 			}
+			
 		}
 
 

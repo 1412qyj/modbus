@@ -21,10 +21,10 @@ int handleRequest(tcp_request_t *m, tcp_respond_t *n)
 		case x10_write_registers:
 			handle_x10(m, n);
 			break;
-		default://功能码不正确，设置为异常码01:错误的功能码
-			set_response_funcode(n, get_request_funcode(m) + 0x80);
-			set_respond_errornum(n, exception_x01);//错误的功能码
-			break;
+		//default://功能码不正确，设置为异常码01:错误的功能码
+			//set_response_funcode(n, get_request_funcode(m) + 0x80);
+			//set_respond_errornum(n, exception_x01);//错误的功能码
+		//	break;
 		}
 	}
 

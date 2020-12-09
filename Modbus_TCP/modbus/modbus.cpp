@@ -8,14 +8,7 @@ int get_request_funcode(tcp_request_t* m)
 	}
 	return -1;
 }
-int set_request_funcode(tcp_request_t* m, int funtion)
-{
-	if (m)
-	{
-		m->request.data[FUNCTION_INDEX] = (funtion & 0xff);
-	}
-	return Error_Ok;
-}
+
 
 int get_request_address(tcp_request_t* m)
 {
@@ -28,15 +21,7 @@ int get_request_address(tcp_request_t* m)
 	}
 	return address;
 }
-int set_request_address(tcp_request_t* m, int address)
-{
-	if (m)
-	{
-		m->request.data[ADDRESS_INDEX0] = (address >> 8) & 0xff;
-		m->request.data[ADDRESS_INDEX1] = (address >> 0) & 0xff;
-	}
-	return Error_Ok;
-}
+
 
 int get_request_byte(tcp_request_t* m)
 {
@@ -49,17 +34,7 @@ int get_request_byte(tcp_request_t* m)
 	return Error_Ok;
 }
 
-int set_request_byte(tcp_request_t* m, int byte)
-{
-	switch (get_request_funcode(m))
-	{
-	case x0f_write_coils:
-	case x10_write_registers:
-		m->request.x10.byte = (byte & 0xff);
-		break;
-	}
-	return Error_Ok;
-}
+
 
 int get_response_funcode(tcp_respond_t* m)
 {
@@ -234,23 +209,6 @@ int get_request_count(tcp_request_t* m)
 	return count;
 }
 
-int set_request_count(tcp_request_t* m, int count)
-{
-	switch (get_request_funcode(m))
-	{
-	case x01_read_coil:
-	case x03_read_registers:
-		m->request.x01.count[0] = (count >> 8) & 0xff;
-		m->request.x01.count[1] = (count >> 0) & 0xff;
-		break;
-	case x0f_write_coils:
-	case x10_write_registers:
-		m->request.x10.count[0] = (count >> 8) & 0xff;
-		m->request.x10.count[1] = (count >> 0) & 0xff;
-		break;
-	}
-	return Error_Ok;
-}
 
 int set_respond_errornum(tcp_respond_t *m, int errornum)
 {
@@ -298,34 +256,13 @@ int set_response_address(tcp_respond_t* m, int address)
 	}
 	return Error_Ok;
 }
-int get_response_address(tcp_respond_t* m)
-{
-	int address = 0;
 
-	switch (get_response_funcode(m))
-	{
-	case x01_read_coil:
-	case x03_read_registers:
-		break;
-	case x0f_write_coils:
-	case x10_write_registers:
-		address += (0xff & m->response.x0f.addr[0] << 8);
-		address += (0xff & m->response.x0f.addr[1] << 0);
-		break;
-	}
-	return address;
-}
 
 int set_response_count(tcp_respond_t* m, int count)
 {
 	switch (get_response_funcode(m))
 	{
-	case x01_read_coil:
-		m->response.x01.byte = 0xff & (count / 8);
-		break;
-	case x03_read_registers:
-		m->response.x01.byte = 0xff & (count * 2);
-		break;
+
 	case x0f_write_coils:
 	case x10_write_registers:
 		m->response.x10.count[0] = 0xff & (count >> 8);

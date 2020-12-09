@@ -28,18 +28,19 @@ int check_request(tcp_request_t *m)
 			return Error_InValidLength;
 		}
 
-		//检查count
+		//检查byte
 		if (!check_byte(m))
 		{
 			return Error_InValidByte;
 		}
 
+		/*
 		//检查数据长度和byte是否一致
 		if (!check_dataSize(m))
 		{
 			return Error_Datasize;
 		}
-
+*/
 		return 0;//除此之外，格式都是正确的
 	}
 
@@ -97,25 +98,6 @@ int check_funcode(tcp_request_t *m)
 	return Error_Ok;
 }
 
-int check_count(tcp_request_t *m)
-{
-	if (m)
-	{
-		switch (get_request_funcode(m))
-		{
-		case x01_read_coil:
-		case x0f_write_coils:
-			return ((get_request_count(m) <= 2000) && (get_request_count(m) > 0));
-			break;
-		case x03_read_registers:
-		case x10_write_registers:
-			return ((get_request_count(m) <= 125) && (get_request_count(m) > 0));
-			break;
-		}
-	}
-
-	return Error_Ok;
-}
 
 int check_byte(tcp_request_t *m)
 {
@@ -139,7 +121,7 @@ int check_byte(tcp_request_t *m)
 	return Error_Ok;
 }
 
-int check_dataSize(tcp_request_t *m)
+/*int check_dataSize(tcp_request_t *m)
 {
 	if (m)
 	{
@@ -158,4 +140,4 @@ int check_dataSize(tcp_request_t *m)
 
 	return Error_Ok;
 }
-
+*/
