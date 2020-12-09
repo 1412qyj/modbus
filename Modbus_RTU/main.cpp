@@ -1,4 +1,4 @@
-#include "info\info.h"
+ï»¿#include "info\info.h"
 #include "uart\uart.h"
 #include "crc\crc.h"
 #include "check\check.h"
@@ -11,10 +11,10 @@ extern unsigned char registerInfos[256];
 
 int main()
 {
-	//ÊäÈë´®¿ÚÃû³Æ
+	//è¾“å…¥ä¸²å£åç§°
 	char COM_NAME[4] = {'\0'};
 
-AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
+AGAIN_INPUT_COM://è·³è½¬é‡æ–°è¾“å…¥çš„ä½ç½®
 	
 	printf("input COM>");
 	cin >> COM_NAME;
@@ -23,45 +23,45 @@ AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
 	memset(&coilInfos, 0, sizeof(coilInfos));
 	memset(&registerInfos, 0, sizeof(registerInfos));
 
-	//´´½¨Ò»¸ö´®¿Ú¶ÔÏó
+	//åˆ›å»ºä¸€ä¸ªä¸²å£å¯¹è±¡
 	HANDLE COMM = uart_open(COM_NAME, UART_BUF_SIZE_IN, UART_BUF_SIZE_OUT);
 	if (COMM == nullptr)
 	{ 
 		printf("open %s failed\n", COM_NAME);
 
-		goto AGAIN_INPUT_COM;//ÊäÈë´íÎóÔÙÖØĞÂÊäÈë
+		goto AGAIN_INPUT_COM;//è¾“å…¥é”™è¯¯å†é‡æ–°è¾“å…¥
 	}
 	else
 	{
 		printf("open %s succeefully\n", COM_NAME);
 	}
 
-	//ÉèÖÃ³¬Ê±
+	//è®¾ç½®è¶…æ—¶
 	COMMTIMEOUTS TimeOuts;
 
-	//Éè¶¨¶Á³¬Ê±
+	//è®¾å®šè¯»è¶…æ—¶
 	TimeOuts.ReadIntervalTimeout = 100;
 	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 5000;
-	//Éè¶¨Ğ´³¬Ê± 
+	//è®¾å®šå†™è¶…æ—¶ 
 	TimeOuts.WriteTotalTimeoutMultiplier = 0;
 	TimeOuts.WriteTotalTimeoutConstant = 2000;
-	//ÉèÖÃ³¬Ê± 
+	//è®¾ç½®è¶…æ—¶ 
 	SetCommTimeouts(COMM, &TimeOuts);
 
-#ifdef DEBUG //´òÓ¡³¬Ê±
+#ifdef DEBUG //æ‰“å°è¶…æ—¶
 	GetCommTimeouts(COMM, &TimeOuts);
 	uart_print_timeout(&TimeOuts);
 #endif
 
-	//ÅäÖÃ´®¿Ú	
-	UartConfig_t uartBuf;//´®¿ÚµÄ²¨ÌØÂÊ
-	self_uart_msg uartMsg;//´®¿ÚµÄËùÓĞÊôĞÔ
+	//é…ç½®ä¸²å£	
+	UartConfig_t uartBuf;//ä¸²å£çš„æ³¢ç‰¹ç‡
+	self_uart_msg uartMsg;//ä¸²å£çš„æ‰€æœ‰å±æ€§
 	memset(&uartBuf, 0, sizeof(self_uart_msg));
 	char chIn = 0;
 	
 	DWORD errs = 0;
-	while (1)//Ñ­»·Ñ¯ÎÊÓÃ»§ÅäÖÃ´®¿Ú
+	while (1)//å¾ªç¯è¯¢é—®ç”¨æˆ·é…ç½®ä¸²å£
 	{
 		cout << "do you want the uart set as default(y equal default)";
 
@@ -70,7 +70,7 @@ AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
 			while (getchar() != '\n'){}
 			if (chIn == 'y' || chIn == 'Y')
 			{
-				//Ä¬ÈÏ´®¿ÚÅäÖÃ
+				//é»˜è®¤ä¸²å£é…ç½®
 				uartBuf.Band = CBR_9600;
 				uartBuf.ByteSize = 8;
 				uartBuf.Parity = NOPARITY;
@@ -78,12 +78,12 @@ AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
 			}
 			else
 			{
-				//ÓÃ»§×Ô¶¨Òå´®¿Ú
+				//ç”¨æˆ·è‡ªå®šä¹‰ä¸²å£
 				uart_buf_input(&uartBuf);
 			}
 		}
 
-		if (uart_config(COMM, &uartBuf))//ÅäÖÃ³É¹¦¾ÍÍË³öÑ­»·
+		if (uart_config(COMM, &uartBuf))//é…ç½®æˆåŠŸå°±é€€å‡ºå¾ªç¯
 		{
 			printf("config %s succeefully\n", COM_NAME);
 
@@ -108,16 +108,16 @@ AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
 		}
 	}
 
-	//±¸·İ´®¿ÚµÄÊôĞÔ
+	//å¤‡ä»½ä¸²å£çš„å±æ€§
 	memcpy(&uartMsg.config, &uartBuf, sizeof(UartConfig_t));
 	memcpy(uartMsg.COMNAME, COM_NAME, 4);
 	uartMsg.sizebufIn = UART_BUF_SIZE_IN;
 	uartMsg.sizebufOut = UART_BUF_SIZE_OUT;
 
-	//´òÓ¡´®¿ÚÊı¾İ
+	//æ‰“å°ä¸²å£æ•°æ®
 	PrintuartMsg(&uartMsg);
 
-	//´´½¨Ò»¸ö¹«¹²ÔØÌå
+	//åˆ›å»ºä¸€ä¸ªå…¬å…±è½½ä½“
 	rtu_request_t requestBuf;
 	rtu_respond_t respondBuf;
 	memset(&requestBuf, 0, sizeof(rtu_request_t));
@@ -126,105 +126,105 @@ AGAIN_INPUT_COM://Ìø×ªÖØĞÂÊäÈëµÄÎ»ÖÃ
 	while (1)
 	{
 		cout << "=========================================================================" << endl;
-		//Çå¿ÕÊı¾İ»º³å
+		//æ¸…ç©ºæ•°æ®ç¼“å†²
 		memset(&coilInfos, 0, sizeof(coilInfos));
 		memset(&registerInfos, 0, sizeof(registerInfos));
 
-		//Çå¿ÕÔØÌå
+		//æ¸…ç©ºè½½ä½“
 		memset(&requestBuf, 0, sizeof(requestBuf));
 		memset(&respondBuf, 0, sizeof(respondBuf));
 
-		//ÊäÈë´Ó»úµØÖ·
+		//è¾“å…¥ä»æœºåœ°å€
 		input_slave(&requestBuf);
 
-		//ÊäÈë¹¦ÄÜÂë
+		//è¾“å…¥åŠŸèƒ½ç 
 		input_func(&requestBuf);
 
-		//ÊäÈëÆğÊ¼µØÖ·
+		//è¾“å…¥èµ·å§‹åœ°å€
 		input_begin_addr(&requestBuf);
 
-		//ÊäÈëÊıÁ¿
+		//è¾“å…¥æ•°é‡
 		input_count(&requestBuf);
 
-		//Èç¹ûÊÇĞ´ÏßÈ¦
+		//å¦‚æœæ˜¯å†™çº¿åœˆ
 		if (get_request_funcode(&requestBuf) == x0f_write_coils)
 		{
 			set_request_byte(&requestBuf, (get_request_count(&requestBuf) + 7) / 8);
 			input_coils(&requestBuf);
 		}
 
-		//Èç¹ûÊÇĞ´¼Ä´æÆ÷
+		//å¦‚æœæ˜¯å†™å¯„å­˜å™¨
 		if (get_request_funcode(&requestBuf) == x10_write_registers)
 		{
 			set_request_byte(&requestBuf, get_request_count(&requestBuf)*2);
 			input_registers(&requestBuf);
 		}
 
-		//ÌîĞ´CRC
+		//å¡«å†™CRC
 		set_request_crc(&requestBuf, crc_modbus(requestBuf.request.data, get_request_length(&requestBuf) - 2));
 
-		//·¢ËÍ
+		//å‘é€
 		errs = sendToSlave(&requestBuf, COMM);
 
 #ifdef DEBUG
 		cout << errs << endl;
 #endif
 
-		if (errs == 5)//´®¿Ú±»°Î³öµÄ´íÎó
+		if (errs == 5)//ä¸²å£è¢«æ‹”å‡ºçš„é”™è¯¯
 		{
-			//¹Ø±Õ´®¿Ú
+			//å…³é—­ä¸²å£
 			CloseHandle(COMM);
 
-			COMM = handleUartOutline(&uartMsg);//»ñÈ¡ĞÂµÄ´®¿Ú
+			COMM = handleUartOutline(&uartMsg);//è·å–æ–°çš„ä¸²å£
 
-			//ÉèÖÃ³¬Ê± 
+			//è®¾ç½®è¶…æ—¶ 
 			SetCommTimeouts(COMM, &TimeOuts);
 
 			continue;
 		}
 
-		//´òÓ¡·¢ËÍÊı¾İ
+		//æ‰“å°å‘é€æ•°æ®
 		print_request(&requestBuf);
 
-#ifdef DEBUG //´òÓ¡³¬Ê±
+#ifdef DEBUG //æ‰“å°è¶…æ—¶
 		GetCommTimeouts(COMM, &TimeOuts);
 		uart_print_timeout(&TimeOuts);
 #endif
-		//½ÓÊÕ
+		//æ¥æ”¶
 		errs = receiveFromSlave(&respondBuf, COMM);
 
 #ifdef DEUBG
 		cout << errs << endl;
 #endif
-		if (errs == 995)//´®¿Ú±»°Î³öµÄ´íÎó
+		if (errs == 995)//ä¸²å£è¢«æ‹”å‡ºçš„é”™è¯¯
 		{
-			//¹Ø±Õ´®¿Ú
+			//å…³é—­ä¸²å£
 			CloseHandle(COMM);
 
-			COMM = handleUartOutline(&uartMsg);//»ñÈ¡ĞÂµÄ´®¿Ú
+			COMM = handleUartOutline(&uartMsg);//è·å–æ–°çš„ä¸²å£
 
-			//ÉèÖÃ³¬Ê± 
+			//è®¾ç½®è¶…æ—¶ 
 			SetCommTimeouts(COMM, &TimeOuts);
 
 			continue;
 		}
-		else if (errs == 0)//³¬Ê±
+		else if (errs == 0)//è¶…æ—¶
 		{
 			cout << "timeout !" << endl;
 			continue;
 		}
 
-		//½âÎöÖ®Ç°ÏÈÅĞ¶ÏÊµ¼ÊµÄ×Ö½ÚÊıºÍÓ¦¸ÃÊÕµ½µÄ×Ö½ÚÊıÊÇ·ñÒ»ÖÂ
+		//è§£æä¹‹å‰å…ˆåˆ¤æ–­å®é™…çš„å­—èŠ‚æ•°å’Œåº”è¯¥æ”¶åˆ°çš„å­—èŠ‚æ•°æ˜¯å¦ä¸€è‡´
 		if (errs != get_response_length(&respondBuf))
 		{
 			cout << "data format error" << endl;
 			continue;
 		}
 		
-		//½âÎö½ÓÊÕÊı¾İ
+		//è§£ææ¥æ”¶æ•°æ®
 		if ((errs = respond_check(&respondBuf, &requestBuf)) == Error_Ok)
 		{	
-			//Êı¾İ¼ì²éÎŞÎó£¬´òÓ¡
+			//æ•°æ®æ£€æŸ¥æ— è¯¯ï¼Œæ‰“å°
 			print_respond(&respondBuf);
 		}
 		else
