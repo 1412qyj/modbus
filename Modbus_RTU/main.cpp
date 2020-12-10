@@ -40,7 +40,7 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 	COMMTIMEOUTS TimeOuts;
 
 	//设定读超时
-	TimeOuts.ReadIntervalTimeout = 100;
+	TimeOuts.ReadIntervalTimeout = 10;
 	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 5000;
 	//设定写超时 
