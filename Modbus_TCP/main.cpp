@@ -13,11 +13,12 @@ int main()
 	tcp_respond_t resBuf;
 	memset(&reqBuf, 0, sizeof(tcp_request_t));
 	memset(&resBuf, 0, sizeof(tcp_respond_t));
+	SOCKADDR_IN serversockaddr;
 
 	int ret = 0;
 
 	//创建一个套接字
-	SOCKET socketfd = create_socket();
+	SOCKET socketfd = create_socket(&serversockaddr);
 	if (socketfd < 0)
 	{
 		printSocketErr(socketfd);
@@ -29,6 +30,9 @@ int main()
 	{
 		cout << "socket created successfully" << endl;
 	}
+
+	//打印服务器ip和端口号
+	printSockMsg(&serversockaddr);
 
 	//等待客户端接收
 	SOCKADDR_IN clientAddr;
@@ -45,10 +49,13 @@ int main()
 		return -1;
 	}
 	cout << "Accept: " << inet_ntoa(clientAddr.sin_addr) << endl;
+	//打印客户端的信息
+	printSockMsg(&clientAddr);
 
 	//while轮询接收发送信息
 	while (1)
 	{
+		printf("=================================================================\n");
 		//清空
 		memset(&reqBuf, 0, sizeof(tcp_request_t));
 		memset(&resBuf, 0, sizeof(tcp_respond_t));

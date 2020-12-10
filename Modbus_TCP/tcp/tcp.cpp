@@ -1,6 +1,6 @@
 #include "tcp.h"
 
-SOCKET create_socket(void)
+SOCKET create_socket(SOCKADDR_IN *addrSrv)
 {
 	/*1.加载套接字库*/
 	WSADATA wsaData;
@@ -28,13 +28,12 @@ SOCKET create_socket(void)
 		return  -1;
 	}
 	//初始化服务器地址族变量
-	SOCKADDR_IN addrSrv;
-	addrSrv.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-	addrSrv.sin_family = AF_INET;
-	addrSrv.sin_port = htons(PROT_NUM);
+	addrSrv->sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	addrSrv->sin_family = AF_INET;
+	addrSrv->sin_port = htons(PROT_NUM);
 
 	//绑定
-	iRet = bind(serverSocket, (SOCKADDR*)&addrSrv, sizeof(SOCKADDR));
+	iRet = bind(serverSocket, (SOCKADDR*)addrSrv, sizeof(SOCKADDR));
 	if (iRet == SOCKET_ERROR)
 	{
 		cout << "bind(serverSocket, (SOCKADDR*)&addrSrv, sizeof(SOCKADDR)) execute failed!" << endl;
@@ -55,6 +54,21 @@ SOCKET create_socket(void)
 	cout << "listen success!" << endl;
 
 	return serverSocket;
+}
+
+int printSockMsg(SOCKADDR_IN *sockaddr)
+{
+	if (sockaddr)
+	{
+		cout << "==============================================" << endl;
+		cout << "IP  > " << inet_ntoa(sockaddr->sin_addr) << endl;
+
+		cout << "PORT> " << ntohs(sockaddr->sin_port) << endl;
+		cout << "==============================================" << endl;
+
+	}
+
+	return Error_Ok;
 }
 
 int printSocketErr(int errorno)
