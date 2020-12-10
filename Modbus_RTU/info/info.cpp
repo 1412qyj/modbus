@@ -123,6 +123,7 @@ int input_count(rtu_request_t *pRequest)
 		break;
 	}
 	
+	return 0;
 }
 
 int input_coils(rtu_request_t *pRequest)
