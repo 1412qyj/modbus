@@ -31,8 +31,12 @@ int main()
 		cout << "socket created successfully" << endl;
 	}
 
+ACCEPT_CLIENT:
 	//打印服务器ip和端口号
+	cout << "Server Msg:" << endl;
 	printSockMsg(&serversockaddr);
+
+	printf("waiting for connection -----------------\n");
 
 	//等待客户端接收
 	SOCKADDR_IN clientAddr;
@@ -48,8 +52,10 @@ int main()
 		system("pause");
 		return -1;
 	}
+
 	cout << "Accept: " << inet_ntoa(clientAddr.sin_addr) << endl;
 	//打印客户端的信息
+	cout << "Client Msg :" << endl;
 	printSockMsg(&clientAddr);
 
 	//while轮询接收发送信息
@@ -64,10 +70,15 @@ int main()
 		ret = recvRequest(&reqBuf, clientSocket);
 		if (ret == 0)//客户端退出连接
 		{
+			cout << "***************************************" << endl;
 			cout << inet_ntoa(clientAddr.sin_addr) << " is outLine" << endl;
+			cout << "See you next time" << endl;
+			cout << "***************************************" << endl;
 			closesocket(clientSocket);
-			closesocket(socketfd);//关闭套接字
-			WSACleanup();//Release socket resource 
+			//closesocket(socketfd);//关闭套接字
+			//WSACleanup();//Release socket resource 
+
+			goto ACCEPT_CLIENT;
 			break;
 		}
 		else if (ret == -1)//网线断开

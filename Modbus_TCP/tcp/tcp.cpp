@@ -60,7 +60,6 @@ int printSockMsg(SOCKADDR_IN *sockaddr)
 {
 	if (sockaddr)
 	{
-		cout << "==============================================" << endl;
 		cout << "IP  > " << inet_ntoa(sockaddr->sin_addr) << endl;
 
 		cout << "PORT> " << ntohs(sockaddr->sin_port) << endl;
