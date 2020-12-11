@@ -29,6 +29,6 @@ int receiveFromSlave(rtu_respond_t *pMsg, HANDLE COM);
 HANDLE handleUartOutline(self_uart_msg *msg);
 int PrintuartMsg(self_uart_msg *msg);
 void uart_print_timeout(COMMTIMEOUTS *TimeOuts);
-
+bool uart_set_timeout(HANDLE ComInfo);
 
 #endif

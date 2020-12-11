@@ -17,12 +17,30 @@ HANDLE uart_open(const char *path, int sizeBufferIn, int sizeBufferOut)
 		return NULL;
 	}
 
+	
+
+
 	if (SetupComm(ComInfo, sizeBufferIn, sizeBufferOut))
 		return ComInfo;
 
 	return NULL;
 }
 
+
+bool uart_set_timeout(HANDLE ComInfo)
+{
+	COMMTIMEOUTS TimeOuts;
+	//设定读超时
+	TimeOuts.ReadIntervalTimeout = 10;
+	TimeOuts.ReadTotalTimeoutMultiplier = 0;
+	TimeOuts.ReadTotalTimeoutConstant = 5000;
+	//设定写超时 
+	TimeOuts.WriteTotalTimeoutMultiplier = 0;
+	TimeOuts.WriteTotalTimeoutConstant = 2000;
+	
+	//设置超时 
+	return SetCommTimeouts(ComInfo, &TimeOuts);
+}
 
 bool uart_config(HANDLE ComInfo, UartConfig_t *uartConfigBuf)
 {

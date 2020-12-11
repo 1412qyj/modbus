@@ -2,7 +2,7 @@
 #include "uart\uart.h"
 #include "crc\crc.h"
 #include "check\check.h"
-#include <cstring>
+#include <string.h>
 
 //#define DEBUG
 
@@ -37,19 +37,11 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 	}
 
 	//设置超时
-	COMMTIMEOUTS TimeOuts;
-
-	//设定读超时
-	TimeOuts.ReadIntervalTimeout = 10;
-	TimeOuts.ReadTotalTimeoutMultiplier = 0;
-	TimeOuts.ReadTotalTimeoutConstant = 5000;
-	//设定写超时 
-	TimeOuts.WriteTotalTimeoutMultiplier = 0;
-	TimeOuts.WriteTotalTimeoutConstant = 2000;
-	//设置超时 
-	SetCommTimeouts(COMM, &TimeOuts);
+	if (!uart_set_timeout(COMM))
+		cout << "set timeout failed" << endl;
 
 #ifdef DEBUG //打印超时
+	COMMTIMEOUTS TimeOuts;
 	GetCommTimeouts(COMM, &TimeOuts);
 	uart_print_timeout(&TimeOuts);
 #endif
@@ -57,7 +49,8 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 	//配置串口	
 	UartConfig_t uartBuf;//串口的波特率
 	self_uart_msg uartMsg;//串口的所有属性
-	memset(&uartBuf, 0, sizeof(self_uart_msg));
+	memset((void *)&uartBuf, 0, (size_t)sizeof(UartConfig_t));
+	memset((void *)&uartMsg, 0, sizeof(self_uart_msg));
 	char chIn = 0;
 	
 	DWORD errs = 0;
@@ -92,6 +85,34 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 		else
 		{
 			printf("config %s failed\n", COM_NAME);
+
+			if (GetLastError() == 5)//如果是5，表明串口断开了
+			{	
+				cout << "串口断开" << endl;
+
+				//关闭句柄
+				CloseHandle(COMM);
+
+				while (1)
+				{
+					printf("正在请求重连串口\r");
+					Sleep(1000);
+					if ((COMM = uart_open(COM_NAME, UART_BUF_SIZE_IN, UART_BUF_SIZE_IN)) == nullptr)
+					{
+						continue;
+					}
+					else
+					{
+						printf("\n重连串口成功\n");
+						break;
+					}
+				}
+
+				//设置超时
+				//设置超时
+				if (!uart_set_timeout(COMM))
+					cout << "set timeout failed" << endl;
+			}	
 		}
 
 		cout << "input '#' continue to config com >";
@@ -178,7 +199,7 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 			COMM = handleUartOutline(&uartMsg);//获取新的串口
 
 			//设置超时 
-			SetCommTimeouts(COMM, &TimeOuts);
+			uart_set_timeout(COMM);
 
 			continue;
 		}
@@ -204,7 +225,7 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 			COMM = handleUartOutline(&uartMsg);//获取新的串口
 
 			//设置超时 
-			SetCommTimeouts(COMM, &TimeOuts);
+			uart_set_timeout(COMM);
 
 			continue;
 		}
