@@ -30,6 +30,10 @@ int main()
 	{
 		cout << "socket created successfully" << endl;
 	}
+	
+	SOCKET clientSocket;
+	SOCKADDR_IN clientAddr;
+	memset(&clientAddr, 0, sizeof(clientAddr));
 
 ACCEPT_CLIENT:
 	//打印服务器ip和端口号
@@ -39,9 +43,9 @@ ACCEPT_CLIENT:
 	printf("waiting for connection -----------------\n");
 
 	//等待客户端接收
-	SOCKADDR_IN clientAddr;
+	
 	int len = sizeof(SOCKADDR);
-	SOCKET clientSocket = accept(socketfd, (SOCKADDR*)&clientAddr, &len);
+	clientSocket = accept(socketfd, (SOCKADDR*)&clientAddr, &len);
 	if (clientSocket == INVALID_SOCKET)
 	{
 		printf("accept %d\n", clientSocket);
