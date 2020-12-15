@@ -26,12 +26,6 @@ using namespace std;
 
 typedef enum
 {
-	MinAddress = 0x0000,
-	MaxAddress = 0xFFFF,
-}MinMaxAddressSize_t;
-
-typedef enum
-{
 	MinCoilCount = 1,
 	MaxCoilCount = 2000,
 }MinMaxCoilCount_t;
