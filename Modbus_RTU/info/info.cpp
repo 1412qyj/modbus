@@ -289,6 +289,9 @@ int print_errno(int err, rtu_respond_t *m)
 	case Error_InvalidResponseCrc:
 		cout << "Error_InvalidResponseCrc" << endl;
 		break;
+	case Error_InvalidFormat:
+		cout << "Error_InvalidFormat" << endl;
+		break;
 	case Error_Exception:
 		switch (m->response.data[ERRORNO_INDEX])
 		{

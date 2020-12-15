@@ -76,7 +76,6 @@ typedef enum
 	Error_InvalidCoilCount = -6,
 	Error_InvalidRegisterCount = -7,
 	Error_InvalidRegisterValue = -8,
-
 	Error_Recieving = -40,
 	Error_RecvTimeOut = -41,
 	Error_InvalidResponseSlave = -42,
@@ -87,7 +86,8 @@ typedef enum
 	Error_InvalidResponseByte = -47,
 	Error_InvalidResponseCrc = -48,
 	Error_Exception = -49,
-	Error_InvalidExceptionCode = -50
+	Error_InvalidExceptionCode = -50,
+	Error_InvalidFormat = -51,
 }ErrorCode_t;
 
 

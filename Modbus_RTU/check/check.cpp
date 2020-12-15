@@ -1,9 +1,21 @@
 #include "check.h"
 
-int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest)
+int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize)
 {
 	if (!pRespond || !pRequest)
 		return -1;
+
+	//check length
+	if (check_length(pRequest, recvSize) != Error_Ok)
+	{
+		return Error_InvalidFormat;
+	}
+
+	//check crc
+	if (check_crc(pRespond, recvSize) != 1)
+	{
+		return Error_InvalidResponseCrc;
+	}
 
 	//check slave addr
 	if (check_slave(pRespond, pRequest) != 1)
@@ -16,11 +28,6 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	{
 		if (check_exception(pRespond) == 1)//判断是不是异常码
 		{
-			if (check_exception_crc(pRespond) != 1)//是异常码再判断CRC
-			{
-				return Error_InvalidResponseCrc;
-			}
-
 			if (check_exception_excode(pRespond) != 1)//再判断错误码是否存在
 			{
 				return Error_InvalidExceptionCode;
@@ -33,14 +40,6 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 			return Error_InvalidResponseFunc;
 		}
 	}
-
-
-	//check crc
-	if (check_crc(pRespond) != 1)
-	{
-		return Error_InvalidResponseCrc;
-	}
-
 
 	//check addr
 	if (check_addr(pRespond, pRequest) != 1)
@@ -96,12 +95,12 @@ int check_addr(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	return 0;
 }
 
-int check_crc(rtu_respond_t *pRespond)
+int check_crc(rtu_respond_t *pRespond, int dataSize)
 {
 	if (!pRespond)
 		return -1;
 
-	return (get_response_crc(pRespond) == crc_modbus(pRespond->response.data, get_response_length(pRespond) - 2));
+	return (get_response_crc(pRespond, dataSize) == crc_modbus(pRespond->response.data, dataSize -2));
 }
 
 
@@ -183,4 +182,30 @@ int check_exception_excode(rtu_respond_t *m)
 	}
 
 	return Error_Ok;
+}
+
+int check_length(rtu_request_t *m, int recvSize)
+{
+	switch (get_request_address(m))//这个switch只判断正常响应的大小
+	{
+	case x01_read_coil:
+		if (recvSize == ((get_request_count(m) + 7) / 8 + 5))//判断正常响应长度
+			return Error_Ok;
+		if (recvSize == 5)
+			return Error_Ok;
+		break;
+	case x03_read_registers:
+		if (recvSize == ((get_request_count(m) * 2) + 5))
+			return Error_Ok;
+		if (recvSize == 5)
+			return Error_Ok;
+		break;
+	case x0f_write_coils:
+	case x10_write_registers:
+		if (recvSize == 5 || recvSize == 8)
+			return Error_Ok;
+		break;
+	}
+
+	return Error_InvalidFormat;
 }

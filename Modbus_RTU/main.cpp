@@ -235,15 +235,9 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 			continue;
 		}
 
-		//解析之前先判断实际的字节数和应该收到的字节数是否一致
-		if (errs != get_response_length(&respondBuf))
-		{
-			cout << "data format error" << endl;
-			continue;
-		}
 		
 		//解析接收数据
-		if ((errs = respond_check(&respondBuf, &requestBuf)) == Error_Ok)
+		if ((errs = respond_check(&respondBuf, &requestBuf, errs)) == Error_Ok)
 		{	
 			//数据检查无误，打印
 			print_respond(&respondBuf);
