@@ -181,7 +181,7 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 		set_response_count(n, get_request_count(m));
 
 		//配置内存
-		for (int i = address; i <= address + count; i++)
+		for (int i = address; i < address + count; i++)
 		{
 			if (GetCoilState(m->request.x0f.data, i - address))//获得地址对应的coil状态,true
 			{
@@ -250,9 +250,11 @@ int handleErrorFuncode(tcp_request_t *m, tcp_respond_t *n)
 {
 	if (m && n)
 	{
+		memcpy((void *)&(n->tcp_head), (void *)&(m->tcp_head), sizeof(tcp_head_t));
 		set_response_funcode(n, get_request_funcode(m)+0x80);//加0x80的差错码
-		n->response.data[ERRORNO_INDEX] = 0x01;//设置异常码
+		n->response.exc.code = 0x01;//设置异常码
 
+		n->tcp_head.Length[0] = 0x00;
 		n->tcp_head.Length[1] = 0x03;//设置长度
 
 		return 0;

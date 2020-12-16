@@ -170,8 +170,8 @@ struct requestx
 
 struct exceptions
 {
-	unsigned func;
-	unsigned code;
+	unsigned char func;
+	unsigned char code;
 };
 
 

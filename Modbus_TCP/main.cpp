@@ -128,10 +128,6 @@ ACCEPT_CLIENT:
 				printErrorno(ret);//打印请求解析出错的结果
 				continue;//这次循环直接结束
 			}
-			else if (ret == Error_InValidfuncode)//错误的功能码
-			{
-				handleErrorFuncode(&reqBuf, &resBuf);
-			}
 			else//请求数据正确
 			{
 				//打印
@@ -143,6 +139,8 @@ ACCEPT_CLIENT:
 		//功能码不错误的话，填充响应
 		if (ret != Error_InValidfuncode)
 			handleRequest(&reqBuf, &resBuf);
+		else
+			handleErrorFuncode(&reqBuf, &resBuf);
 
 		//发送响应
 		ret = sendRespond(&resBuf, clientSocket);
