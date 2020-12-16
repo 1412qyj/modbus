@@ -58,7 +58,7 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 		}
 
 		//起始地址+查询地址太大+或者count==0
-		if (count > MaxCoilCount || address + count > coil_end_addr || count == 0)
+		if (count > MaxCoilCount || address + count > coil_end_addr || count < MinCoilCount)
 		{
 			set_response_funcode(n, x80_x01_read_coil);//设置差错功能码
 
@@ -161,7 +161,7 @@ int handle_x0f(tcp_request_t *m, tcp_respond_t *n)
 		}
 		
 		//起始地址+查询地址太大
-		if (count > MaxCoilCount-32 || address + get_request_count(m) > coil_end_addr || count == 0)
+		if (count > MaxCoilCount-32 || address + get_request_count(m) > coil_end_addr || count < MinCoilCount)
 		{
 			set_response_funcode(n, x80_x0f_write_coils);//设置差错功能码
 
@@ -215,7 +215,7 @@ int handle_x10(tcp_request_t *m, tcp_respond_t *n)
 			return 0;
 		}
 
-		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 || 查询的地址不是一个寄存器的开始
+		//count > 一次能写寄存器数量的最大值 || 起始地址+查询地址太大 
 		if ((count > MaxRegisterCount-2) || ((address + count) > reg_end_addr) || count == 0)
 		{
 			set_response_funcode(n, x80_x10_write_registers);

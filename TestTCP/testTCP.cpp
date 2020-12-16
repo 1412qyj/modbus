@@ -193,7 +193,7 @@ namespace TestTCP
 
 				//测试函数在此
 				//第一步验证主机发送的报文是否正确
-				result = check_request(&tcp_request);
+				result = check_request(&tcp_request, ini_requestlen);
 
 				Assert::AreEqual(result, ini_ret);//无论如何都有一个check返回值
 

@@ -4,8 +4,8 @@
 #include "../info/info.h"
 #include "../modbus/modbus.h"
 
-#define PROT_NUM 7777
-#define TCP_HEAD_LEN 7
+#define PROT_NUM 7777  //¶Ë¿ÚºÅ
+#define TCP_HEAD_LEN 7 //¼àÌýÊýÁ¿
 
 SOCKET create_socket(SOCKADDR_IN *addrSrv);
 int printSocketErr(int errorno);

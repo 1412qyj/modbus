@@ -1,10 +1,16 @@
 #include "check.h"
 #include "../modbus/modbus.h"
 
-int check_request(tcp_request_t *m)
+int check_request(tcp_request_t *m, int recvSize)
 {
 	if (m)
 	{
+		//判断长度
+		if (!check_length(m, recvSize))
+		{
+			return Error_InValidLength;
+		}
+
 		if (!check_protocol(m))//检查TCP头协议模式
 		{
 			return Error_InValidProtocol;
@@ -22,11 +28,6 @@ int check_request(tcp_request_t *m)
 			return Error_InValidfuncode;
 		}
 
-		//检查Length
-		if (!check_length(m))
-		{
-			return Error_InValidLength;
-		}
 
 		//检查byte
 		if (!check_byte(m))
@@ -34,13 +35,6 @@ int check_request(tcp_request_t *m)
 			return Error_InValidByte;
 		}
 
-		/*
-		//检查数据长度和byte是否一致
-		if (!check_dataSize(m))
-		{
-			return Error_Datasize;
-		}
-*/
 		return 0;//除此之外，格式都是正确的
 	}
 
@@ -67,15 +61,6 @@ int check_unitId(tcp_request_t *m)
 	return Error_Ok;
 }
 
-int check_length(tcp_request_t *m)
-{
-	if (m)
-	{
-		return ((get_request_size(m) - 6) == (get_request_length(m)));
-	}
-
-	return Error_Ok;
-}
 
 int check_funcode(tcp_request_t *m)
 {
@@ -121,23 +106,12 @@ int check_byte(tcp_request_t *m)
 	return Error_Ok;
 }
 
-/*int check_dataSize(tcp_request_t *m)
+int check_length(tcp_request_t *m, int recvSize)
 {
 	if (m)
 	{
-		switch (get_request_funcode(m))
-		{
-		case x01_read_coil:
-		case x03_read_registers:
-			return 1;
-			break;
-		case x0f_write_coils:
-		case x10_write_registers:
-			return ((get_request_size(m) - sizeof(tcp_head_t) - 6) == get_request_byte(m));
-			break;
-		}
+		return (get_request_length(m) == (recvSize - 6));
 	}
 
 	return Error_Ok;
 }
-*/

@@ -1,35 +1,6 @@
 #include "info.h"
 #include "../modbus/modbus.h"
 
-int printRequest(tcp_request_t *m)
-{
-	cout << "recv> ";
-
-	if (m)
-	{
-		for (int i = 0; i < get_request_size(m); i++)
-			printf("%02x ", *(m+i));
-
-		puts("");
-	}
-	
-	return Error_Ok;
-}
-
-int printRespond(tcp_respond_t *m)
-{
-	cout << "send> ";
-	if (m)
-	{
-		for (int i = 0; i < get_response_size(m); i++)
-			printf("%02x ", *(m+i));
-
-		puts("");
-	}
-
-	return Error_Ok;
-}
-
 int printErrorno(int errornum)
 {
 	switch (errornum)

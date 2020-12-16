@@ -70,6 +70,7 @@ ACCEPT_CLIENT:
 		memset(&reqBuf, 0, sizeof(tcp_request_t));
 		memset(&resBuf, 0, sizeof(tcp_respond_t));
 
+//====================================数据接收模块=========================================//
 		//接收请求
 		ret = recvRequest(&reqBuf, clientSocket);
 		if (ret == 0)//客户端退出连接
@@ -85,7 +86,7 @@ ACCEPT_CLIENT:
 			goto ACCEPT_CLIENT;
 			break;
 		}
-		else if (ret == -1)//网线断开
+		if (ret == -1)//网线断开
 		{
 			cout << "ether is outline----" << endl;
 			closesocket(clientSocket);
@@ -102,39 +103,46 @@ ACCEPT_CLIENT:
 
 			continue;
 		}
-		else if (ret < -1)//接收出错
+		if (ret < -1)//接收出错
 		{
 			perror("recv:");
 
-			//清空
-			memset(&reqBuf, 0, sizeof(tcp_request_t));
-			memset(&resBuf, 0, sizeof(tcp_respond_t));
-
 			continue;
 		}
-		else//接收成功
-		{
-			//先比较数据长度
-			if ((ret - 6) != get_request_length(&reqBuf))//此时的ret是实际接收的长度
-			{
-				cout << "Error_InValidLength" << endl;
-				continue;
-			}
 
-			ret = check_request(&reqBuf);
-			//判断解析请求
-			if (ret != 0 && ret != Error_InValidfuncode)
-			{
-				printErrorno(ret);//打印请求解析出错的结果
-				continue;//这次循环直接结束
-			}
-			else//请求数据正确
-			{
-				//打印
-				cout << "recv >";
-				showhex((unsigned char *)&reqBuf, get_request_size(&reqBuf));
-			}	
+//====================================数据接收模块=========================================//
+
+
+
+
+
+
+//====================================数据解析模块=========================================//
+		ret = check_request(&reqBuf, ret);
+		//判断解析请求
+		if (ret != 0 && ret != Error_InValidfuncode)
+		{
+			printErrorno(ret);//打印请求解析出错的结果
+			continue;//这次循环直接结束
 		}
+		else//请求数据正确
+		{
+			//打印
+			cout << "recv >";
+			showhex((unsigned char *)&reqBuf, get_request_size(&reqBuf));
+		}	
+		
+//====================================数据解析模块=========================================//
+
+
+
+
+
+
+
+
+//====================================解析结果处理模块模块=========================================//
+
 
 		//功能码不错误的话，填充响应
 		if (ret != Error_InValidfuncode)
@@ -159,8 +167,7 @@ ACCEPT_CLIENT:
 		cout << "send >";
 		showhex((unsigned char *)&resBuf, get_respond_size(&resBuf));
 
-
-
+//====================================解析结果处理模块模块=========================================//
 	}
 
 

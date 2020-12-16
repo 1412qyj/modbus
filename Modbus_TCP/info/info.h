@@ -8,16 +8,22 @@
 #pragma comment(lib,"ws2_32.lib")//添加socket库
 using namespace std;
 
+#define FUNCTION_INDEX		0		//功能码索引
+#define ERRORNO_INDEX		1		//错误码索引
+#define ADDRESS_INDEX0		1		//起始地址高位索引
+#define ADDRESS_INDEX1		2		//起始地址地位索引
+#define COUNT_INDEX0		3		//数量高位索引
+#define COUNT_INDEX1		4		//数量低位索引
+#define BYTES_INDEX			5		//字节数索引
+#define Slave_Addr          0x01	//从机地址
+#define COIL_SIZE			1250	//存放线圈内存大小
+#define REG_SIZE			10000	//存放寄存器内存大小
 
-#define FUNCTION_INDEX		0
-#define ERRORNO_INDEX		1
-#define ADDRESS_INDEX0		1
-#define ADDRESS_INDEX1		2
-#define COUNT_INDEX0		3
-#define COUNT_INDEX1		4
-#define BYTES_INDEX			5
-#define Slave_Addr          0x01
 
+typedef char CoilBuf_t[COIL_SIZE];
+typedef short RegisterBuf_t[REG_SIZE];
+
+//16进制打印数据
 #define showhex(data, len)						\
 do{												\
 	int i = 0;									\
@@ -35,8 +41,7 @@ do{												\
 	printf("\n");								\
 }while(0)
 
-typedef char CoilBuf_t[250];
-typedef short RegisterBuf_t[125];
+
 
 
 #define MakeShort(h,l)	( (((short)(h)&0xff)<<8) | ((short)(l)&0xff) )
@@ -49,27 +54,22 @@ typedef short RegisterBuf_t[125];
 #define GetCoilState(buf, a)       ( (buf[CoilAddressToIndex(a)]) & (0x1 << (CoilCharBit(a) ) ))
 #define GetRegIndex(a)  ((a-reg_start_addr)/4)
 
-
+//[下限, 上限)
 typedef enum{
-	coil_start_addr = 0x0000,
-	coil_end_addr   = 0x07D0,
+	coil_start_addr = 0x0000, //线圈起始地址下限
+	coil_end_addr   = 0x2710, //线圈起始地址上限
 }coil_addr;
 
 typedef enum{
-	reg_start_addr = 0x0000,
-	reg_end_addr   = 0x007D
+	reg_start_addr = 0x0000,  //寄存器起始地址下限
+	reg_end_addr   = 0x2710,  //寄存器起始地址上限
 }reg_addr;
 
-typedef enum
-{
-	MinAddress = 0x0000,
-	MaxAddress = 0xFFFF,
-}MinMaxAddressSize_t;
 
 typedef enum
 {
-	MinCoilCount = 1,
-	MaxCoilCount = 2000,
+	MinCoilCount = 1,         
+	MaxCoilCount = 2000,    
 }MinMaxCoilCount_t;
 
 typedef enum
@@ -78,11 +78,6 @@ typedef enum
 	MaxRegisterCount = 125,
 }MinMaxRegisterCount_t;
 
-typedef enum
-{
-	MinRegisterValue = 0x0000,
-	MaxRegisterValue = 0xFFFF,
-}RegisterValue_t;
 
 typedef enum
 {
@@ -120,7 +115,6 @@ typedef enum
 	Error_InvalidCoilCount = -6,
 	Error_InvalidRegisterCount = -7,
 	Error_InvalidRegisterValue = -8,
-
 	Error_Recieving = -40,
 	Error_RecvTimeOut = -41,
 	Error_InvalidResponseFunc = -43,
@@ -142,7 +136,6 @@ typedef enum
 	Error_InValidfuncode = -70,
 	Error_InValidCount = -71,
 	Error_InValidByte = -72,
-	Error_Datasize = -73,
 }ErrorCode_t;
 
 
