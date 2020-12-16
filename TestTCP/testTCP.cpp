@@ -16,8 +16,6 @@ namespace TestTCP
 		
 		TEST_METHOD(TCP)
 		{
-			int a = 0;
-
 			auto char_to_hex = [](uint8_t *str){
 				int   num[16] = { 0 };
 				int   count = 1;
@@ -200,6 +198,7 @@ namespace TestTCP
 				if (result != 0 && result != Error_InValidfuncode)//这种情况下不需要回馈响应
 				{
 					//啥也不干
+					continue;
 				}
 				else if (result == Error_InValidfuncode)//功能码出错进行异常处理
 				{
@@ -215,14 +214,10 @@ namespace TestTCP
 					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
 				}
 
-
-
-
 				sectionCount++;//大循环结尾
 			}
-			
 		}
-
+		
 
 	};
 }
