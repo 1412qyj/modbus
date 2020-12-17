@@ -49,4 +49,6 @@ int get_response_crc(rtu_respond_t* m);
 int get_exception_code(rtu_respond_t *m);
 int get_response_crc(rtu_respond_t* m, int dataSize);
 
+int guess_respond_length(rtu_request_t *m);
+
 #endif

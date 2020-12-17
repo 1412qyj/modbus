@@ -5,6 +5,7 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize
 	if (!pRespond || !pRequest)
 		return -1;
 
+	int ret = 0;
 	//check length
 	if (check_length(pRequest, recvSize, pRespond) != Error_Ok)
 	{
@@ -24,9 +25,13 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize
 	}
 
 	//check func
-	if (check_func(pRespond, pRequest) != 1)//判断是不是功能码
+	if ((ret = check_func(pRespond, pRequest, recvSize)) == Error_InvalidFormat)//判断是不是功能码
 	{
-		if (check_exception(pRespond) == 1)//判断是不是异常码
+		return Error_InvalidFormat;
+	}
+	else if (ret == Error_InvalidResponseFunc)
+	{
+		if ((ret = check_exception(pRespond, recvSize)) == 1)//判断是不是异常码
 		{
 			if (check_exception_excode(pRespond) != 1)//再判断错误码是否存在
 			{
@@ -37,9 +42,11 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize
 		}
 		else//那就是啥也不是
 		{
-			return Error_InvalidResponseFunc;
+			return ret;
 		}
 	}
+
+
 
 	//check addr
 	if (check_addr(pRespond, pRequest) != 1)
@@ -130,19 +137,30 @@ int check_count(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	return (get_request_count(pRequest) == get_response_count(pRespond));
 }
 
-int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recv)
+int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize)
 {
 	if (!pRespond || !pRequest)
 		return -1;
 
-	if (get_request_funcode(pRequest) == get_response_funcode(pRespond) && )//对应的功能码相同
-	return ();
+	if (get_request_funcode(pRequest) == get_response_funcode(pRespond))//对应的功能码相同
+	{
+		if (recvSize == guess_respond_length(pRequest))
+			return Error_Ok;
+		else
+			return Error_InvalidFormat;
+	}
+		
+
+	return Error_InvalidResponseFunc;
 }
 
-int check_exception(rtu_respond_t *pRespond)
+int check_exception(rtu_respond_t *pRespond, int recvSize)
 {
 	if (!pRespond)
 		return -1;
+
+	if (recvSize != 5)
+		return Error_InvalidFormat;
 
 	switch (get_response_funcode(pRespond))
 	{
@@ -150,11 +168,11 @@ int check_exception(rtu_respond_t *pRespond)
 	case x80_x03_read_registers:
 	case x80_x0f_write_coils:
 	case x80_x10_write_registers:
-		return 1;
+			return 1;
 		break;
 	}
 
-	return -1;
+	return Error_InvalidResponseFunc;
 }
 
 int check_exception_crc(rtu_respond_t *m)

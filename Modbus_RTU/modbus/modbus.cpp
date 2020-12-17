@@ -375,6 +375,27 @@ int get_response_crc(rtu_respond_t* m, int dataSize)
 	return Error_Ok;
 }
 
+int guess_respond_length(rtu_request_t *m)
+{
+	if (m)
+	{
+		switch (get_request_funcode(m))
+		{
+		case x01_read_coil:
+			return 5 + (get_request_count(m) + 7) / 8;
+			break;
+		case x03_read_registers:
+			return 5 + (get_request_count(m) * 2);
+			break;
+		case x0f_write_coils:
+		case x10_write_registers:
+			return 8;
+			break;
+		}
+	}
+
+	return Error_Ok;
+}
 
 
 
