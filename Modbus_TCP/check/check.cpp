@@ -5,8 +5,10 @@ int check_request(tcp_request_t *m, int recvSize)
 {
 	if (m)
 	{
+		int ret = 0;
+
 		//判断长度
-		if (!check_length(m, recvSize))
+		if (recvSize < 10 || !check_length(m, recvSize))//长度比10小肯定错(包头7 + 异常响应3)
 		{
 			return Error_InValidLength;
 		}
@@ -23,9 +25,9 @@ int check_request(tcp_request_t *m, int recvSize)
 		}
 
 		//检查功能码
-		if (!check_funcode(m))
+		if ((ret = check_funcode(m, recvSize)) != Error_Ok)
 		{
-			return Error_InValidfuncode;
+			return ret;
 		}
 
 
@@ -62,7 +64,7 @@ int check_unitId(tcp_request_t *m)
 }
 
 
-int check_funcode(tcp_request_t *m)
+int check_funcode(tcp_request_t *m, int recvSize)
 {
 	if (m)
 	{
@@ -70,12 +72,20 @@ int check_funcode(tcp_request_t *m)
 		{
 		case x01_read_coil:
 		case x03_read_registers:
+			if (recvSize - 6 != 6)//功能码对但是长度不对，格式错误
+				return Error_InValidFormat;
+			else
+				return Error_Ok;
+			break;
 		case x10_write_registers:
 		case x0f_write_coils:
-			return 1;
+			if (recvSize - 6 != 7 + get_request_byte(m))//功能码对但是长度不对，格式错误
+				return Error_InValidFormat;
+			else
+				return Error_Ok;
 			break;
 		default:
-			return 0;
+			return Error_InValidfuncode;
 			break;
 		}
 	}

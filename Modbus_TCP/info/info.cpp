@@ -44,6 +44,9 @@ int printErrorno(int errornum)
 		case Error_InValidByte:
 			cout << "Error_InValidByte" << endl;
 			break;
+		case Error_InValidFormat:
+			cout << "Error_InValidFormat" << endl;
+			break;
 		default:
 			cout << "errornum: " << errornum << "£º ²»¿ÉÃèÊöµÄ´íÎó" << endl;
 			break;

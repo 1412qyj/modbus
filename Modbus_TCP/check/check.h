@@ -7,7 +7,7 @@ int check_request(tcp_request_t *m, int recvSize);
 int check_protocol(tcp_request_t *m);
 int check_unitId(tcp_request_t *m);
 int check_length(tcp_request_t *m);
-int check_funcode(tcp_request_t *m);
+int check_funcode(tcp_request_t *m, int recvSize);
 int check_byte(tcp_request_t *m);
 int check_length(tcp_request_t *m, int recvSize);
 

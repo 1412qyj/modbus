@@ -130,12 +130,13 @@ typedef enum
 	Error_Version = -64,
 	Error_Argc = -65,
 	Error_ClientOutLine = -66,
-	Error_InValidProtocol = -67, 
+	Error_InValidProtocol = -67,
 	Error_InValidUnitId = -68,
 	Error_InValidLength = -69,
 	Error_InValidfuncode = -70,
 	Error_InValidCount = -71,
 	Error_InValidByte = -72,
+	Error_InValidFormat = -73,
 }ErrorCode_t;
 
 
