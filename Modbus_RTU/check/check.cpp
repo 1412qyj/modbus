@@ -186,7 +186,7 @@ int check_exception_excode(rtu_respond_t *m)
 
 int check_length(rtu_request_t *m, int recvSize)
 {
-	switch (get_request_address(m))//这个switch只判断正常响应的大小
+	switch (get_request_funcode(m))//这个switch只判断正常响应的大小
 	{
 	case x01_read_coil:
 		if (recvSize == ((get_request_count(m) + 7) / 8 + 5))//判断正常响应长度
