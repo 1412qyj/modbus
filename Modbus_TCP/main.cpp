@@ -43,7 +43,6 @@ ACCEPT_CLIENT:
 	printf("waiting for connection -----------------\n");
 
 	//等待客户端接收
-	
 	int len = sizeof(SOCKADDR);
 	clientSocket = accept(socketfd, (SOCKADDR*)&clientAddr, &len);
 	if (clientSocket == INVALID_SOCKET)

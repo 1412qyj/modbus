@@ -68,6 +68,7 @@ namespace TestTCP
 
 			//执行结果
 			int result = 0;
+			char LoggerMsg[20] = {'\0'};
 
 			//报文提取辅助变量
 			char *pbuf = nullptr;
@@ -87,7 +88,7 @@ namespace TestTCP
 			}
 
 			sstr_sectionNames << sectionNames;
-
+			char assert_result = 0;
 
 			while (sstr_sectionNames >> sectionName)//每有一个章节就会循环一次
 			{
@@ -192,28 +193,53 @@ namespace TestTCP
 				//测试函数在此
 				//第一步验证主机发送的报文是否正确
 				result = check_request(&tcp_request, ini_requestlen);
+				
 
 				Assert::AreEqual(result, ini_ret);//无论如何都有一个check返回值
 
 				if (result != 0 && result != Error_InValidfuncode)//这种情况下不需要回馈响应
 				{
 					//啥也不干
+					sectionCount++;
+					
 					continue;
 				}
 				else if (result == Error_InValidfuncode)//功能码出错进行异常处理
 				{
 					handleErrorFuncode(&tcp_request, &tcp_respond_compare);
 
-					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
 				}
 				else//正常回馈响应
 				{
 					//填充compare结构体
 					handleRequest(&tcp_request, &tcp_respond_compare);
 
-					Assert::IsTrue(!strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen));
+
+					/*LoggerMsg[0] = assert_result + '0';
+					Logger::WriteMessage(LoggerMsg);*/
+
 				}
 
+
+				assert_result = strncmp((char *)&tcp_respond, (char *)&tcp_respond_compare, ini_respondlen);
+
+
+				/*断言*/
+				//判断包头
+				Assert::AreEqual(tcp_respond.tcp_head.ProtoId[0], tcp_respond_compare.tcp_head.ProtoId[0]);
+				Assert::AreEqual(tcp_respond.tcp_head.ProtoId[1], tcp_respond_compare.tcp_head.ProtoId[1]);
+				Assert::AreEqual(tcp_respond.tcp_head.UnitId, tcp_respond_compare.tcp_head.UnitId);
+				Assert::AreEqual(tcp_respond.tcp_head.Length[0], tcp_respond_compare.tcp_head.Length[0]);
+				Assert::AreEqual(tcp_respond.tcp_head.Length[1], tcp_respond_compare.tcp_head.Length[1]);
+				Assert::AreEqual(tcp_respond.tcp_head.tranId[0], tcp_respond_compare.tcp_head.tranId[0]);
+				Assert::AreEqual(tcp_respond.tcp_head.tranId[0], tcp_respond_compare.tcp_head.tranId[0]);
+
+				//判断数据
+				for (int i = 0; i < ini_respondlen - 7; i++)
+				{
+					Assert::AreEqual(tcp_respond.response.data[i], tcp_respond_compare.response.data[i]);
+				}
+				
 				sectionCount++;//大循环结尾
 			}
 		}
