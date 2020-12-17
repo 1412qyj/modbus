@@ -6,7 +6,7 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize
 		return -1;
 
 	//check length
-	if (check_length(pRequest, recvSize) != Error_Ok)
+	if (check_length(pRequest, recvSize, pRespond) != Error_Ok)
 	{
 		return Error_InvalidFormat;
 	}
@@ -130,12 +130,13 @@ int check_count(rtu_respond_t *pRespond, rtu_request_t *pRequest)
 	return (get_request_count(pRequest) == get_response_count(pRespond));
 }
 
-int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest)
+int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recv)
 {
 	if (!pRespond || !pRequest)
 		return -1;
 
-	return (get_request_funcode(pRequest) == get_response_funcode(pRespond));
+	if (get_request_funcode(pRequest) == get_response_funcode(pRespond) && )//对应的功能码相同
+	return ();
 }
 
 int check_exception(rtu_respond_t *pRespond)
@@ -184,25 +185,21 @@ int check_exception_excode(rtu_respond_t *m)
 	return Error_Ok;
 }
 
-int check_length(rtu_request_t *m, int recvSize)
+int check_length(rtu_request_t *m, int recvSize, rtu_respond_t *n)
 {
 	switch (get_request_funcode(m))//这个switch只判断正常响应的大小
 	{
 	case x01_read_coil:
-		if (recvSize == ((get_request_count(m) + 7) / 8 + 5))//判断正常响应长度
-			return Error_Ok;
-		if (recvSize == 5)
+		if (recvSize == ((get_request_count(m) + 7) / 8 + 5) || recvSize == 5)//判断正常响应长度
 			return Error_Ok;
 		break;
 	case x03_read_registers:
-		if (recvSize == ((get_request_count(m) * 2) + 5))
-			return Error_Ok;
-		if (recvSize == 5)
+		if (recvSize == ((get_request_count(m) * 2) + 5) || recvSize == 5)
 			return Error_Ok;
 		break;
 	case x0f_write_coils:
 	case x10_write_registers:
-		if (recvSize == 5 || recvSize == 8)
+		if (recvSize == 8 || recvSize == 5)
 			return Error_Ok;
 		break;
 	}
