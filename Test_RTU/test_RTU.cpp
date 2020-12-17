@@ -139,7 +139,7 @@ namespace Test_RTU
 				i = 0;
 				
 
-				result = respond_check(&rtu_respond, &rtu_request);
+				result = respond_check(&rtu_respond, &rtu_request, ini_respondlen);
 				Assert::AreEqual(result, ini_ret);
 
 				
@@ -147,7 +147,7 @@ namespace Test_RTU
 			}
 
 			//≤‚ ‘null
-			result = respond_check(nullptr, nullptr);
+			result = respond_check(nullptr, nullptr, 0);
 			Assert::AreEqual(result, -1);
 		}
 
