@@ -33,10 +33,10 @@ bool uart_set_timeout(HANDLE ComInfo)
 	//设定读超时
 	TimeOuts.ReadIntervalTimeout = 10;
 	TimeOuts.ReadTotalTimeoutMultiplier = 0;
-	TimeOuts.ReadTotalTimeoutConstant = 5000;
+	TimeOuts.ReadTotalTimeoutConstant = UART_READ_TIMEOUT;
 	//设定写超时 
 	TimeOuts.WriteTotalTimeoutMultiplier = 0;
-	TimeOuts.WriteTotalTimeoutConstant = 2000;
+	TimeOuts.WriteTotalTimeoutConstant = UART_WRITE_TIMEOUT;
 	
 	//设置超时 
 	return SetCommTimeouts(ComInfo, &TimeOuts);

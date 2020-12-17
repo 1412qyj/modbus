@@ -5,6 +5,8 @@
 #include "../modbus/modbus.h"
 #define UART_BUF_SIZE_IN 1024
 #define UART_BUF_SIZE_OUT 1024
+#define UART_READ_TIMEOUT 10000
+#define UART_WRITE_TIMEOUT 2000
 //#define COM_NAME "COM4"
 
 typedef struct{

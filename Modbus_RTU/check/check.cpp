@@ -159,20 +159,24 @@ int check_exception(rtu_respond_t *pRespond, int recvSize)
 	if (!pRespond)
 		return -1;
 
-	if (recvSize != 5)
-		return Error_InvalidFormat;
+	
 
-	switch (get_response_funcode(pRespond))
+	switch (get_response_funcode(pRespond))//判断是不是异常码
 	{
 	case x80_x01_read_coil:
 	case x80_x03_read_registers:
 	case x80_x0f_write_coils:
 	case x80_x10_write_registers:
-			return 1;
+		break;//是就继续
+	default:
+		return Error_InvalidResponseFunc;//不是就返回错误的功能码
 		break;
 	}
 
-	return Error_InvalidResponseFunc;
+	if (recvSize != 5)//在判断格式是否正确
+		return Error_InvalidFormat;//不正确返回格式错误
+
+	return 1;
 }
 
 int check_exception_crc(rtu_respond_t *m)
