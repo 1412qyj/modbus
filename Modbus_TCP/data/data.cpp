@@ -75,7 +75,7 @@ int handle_x01(tcp_request_t *m, tcp_respond_t *n)
 		set_response_byte(n, GetCoilCount(count));
 
 		//CoilAddressToIndex：求地址对应的映射
-		for (int i = address; i <= address + count; i++)
+		for (int i = address; i < address + count; i++)
 		{
 			if (GetCoilState(coilBuf, i))//coil是true
 			{
