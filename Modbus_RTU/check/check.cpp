@@ -31,7 +31,7 @@ int respond_check(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize
 	}
 	else if (ret == Error_InvalidResponseFunc)
 	{
-		if ((ret = check_exception(pRespond, recvSize)) == 1)//判断是不是异常码
+		if ((ret = check_exception(pRespond, recvSize, pRequest)) == 1)//判断是不是异常码
 		{
 			if (check_exception_excode(pRespond) != 1)//再判断错误码是否存在
 			{
@@ -107,7 +107,7 @@ int check_crc(rtu_respond_t *pRespond, int dataSize)
 	if (!pRespond)
 		return -1;
 
-	return (get_response_crc(pRespond, dataSize) == crc_modbus(pRespond->response.data, dataSize -2));
+	return (get_response_crc(pRespond, dataSize) == crc_modbus(pRespond->response.data, dataSize - 2));
 }
 
 
@@ -149,18 +149,23 @@ int check_func(rtu_respond_t *pRespond, rtu_request_t *pRequest, int recvSize)
 		else
 			return Error_InvalidFormat;
 	}
-		
+
 
 	return Error_InvalidResponseFunc;
 }
 
-int check_exception(rtu_respond_t *pRespond, int recvSize)
+int check_exception(rtu_respond_t *pRespond, int recvSize, rtu_request_t *pRequest)
 {
 	if (!pRespond)
 		return -1;
 
-	
 
+	if (get_request_funcode(pRequest) != get_response_funcode(pRespond) - 0x80)
+	{
+		return Error_InvalidResponseFunc;
+	}
+
+#if 0
 	switch (get_response_funcode(pRespond))//判断是不是异常码
 	{
 	case x80_x01_read_coil:
@@ -172,7 +177,7 @@ int check_exception(rtu_respond_t *pRespond, int recvSize)
 		return Error_InvalidResponseFunc;//不是就返回错误的功能码
 		break;
 	}
-
+#endif
 	if (recvSize != 5)//在判断格式是否正确
 		return Error_InvalidFormat;//不正确返回格式错误
 
