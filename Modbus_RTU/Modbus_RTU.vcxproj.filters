@@ -5,10 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="modbus">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="uart">
       <UniqueIdentifier>{0e6b8fb5-c2a4-4b4e-8bdd-639733180251}</UniqueIdentifier>
     </Filter>
@@ -22,6 +18,9 @@
     <Filter Include="crc">
       <UniqueIdentifier>{b500d630-a497-42c8-b421-78d20ad28b73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="modbus">
+      <UniqueIdentifier>{5432a378-b813-447a-a92a-639644273eb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="info\info.cpp">
@@ -30,18 +29,16 @@
     <ClCompile Include="uart\uart.cpp">
       <Filter>uart</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>modbus</Filter>
-    </ClCompile>
-    <ClCompile Include="modbus\modbus.cpp">
-      <Filter>modbus</Filter>
-    </ClCompile>
     <ClCompile Include="check\check.cpp">
       <Filter>check</Filter>
     </ClCompile>
     <ClCompile Include="crc\crc.cpp">
       <Filter>crc</Filter>
     </ClCompile>
+    <ClCompile Include="modbus\modbus.cpp">
+      <Filter>modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="info\info.h">
@@ -50,14 +47,14 @@
     <ClInclude Include="uart\uart.h">
       <Filter>uart</Filter>
     </ClInclude>
-    <ClInclude Include="modbus\modbus.h">
-      <Filter>modbus</Filter>
+    <ClInclude Include="crc\crc.h">
+      <Filter>crc</Filter>
     </ClInclude>
     <ClInclude Include="check\check.h">
       <Filter>check</Filter>
     </ClInclude>
-    <ClInclude Include="crc\crc.h">
-      <Filter>crc</Filter>
+    <ClInclude Include="modbus\modbus.h">
+      <Filter>modbus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

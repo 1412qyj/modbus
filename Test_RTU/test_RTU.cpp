@@ -10,7 +10,7 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
-#define INI_PATH "../Modbus_RTU/config.ini"
+#define INI_PATH "../Modbus_RTU/config/config.ini"
 #define RESULT_PATH "result.txt"
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
 
