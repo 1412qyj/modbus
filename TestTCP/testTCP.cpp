@@ -4,7 +4,7 @@
 #include "../Modbus_TCP/data/data.h"
 #include "../Modbus_TCP/info/info.h"
 #include "../Modbus_TCP/modbus/modbus.h"
-#define INI_PATH "../Modbus_TCP/tcp_test.ini"
+#define INI_PATH "../Modbus_TCP/config/tcp_test.ini"
 #define MAX_PATH 1024
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
