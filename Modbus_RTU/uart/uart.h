@@ -7,6 +7,7 @@
 #define UART_BUF_SIZE_OUT 1024
 #define UART_READ_TIMEOUT 10000
 #define UART_WRITE_TIMEOUT 2000
+#define UART_BARD_BUF_SIZE 6
 //#define COM_NAME "COM4"
 
 typedef struct{
@@ -32,5 +33,6 @@ HANDLE handleUartOutline(self_uart_msg *msg);
 int PrintuartMsg(self_uart_msg *msg);
 void uart_print_timeout(COMMTIMEOUTS *TimeOuts);
 bool uart_set_timeout(HANDLE ComInfo);
+void baud_buf_printf(void);
 
 #endif

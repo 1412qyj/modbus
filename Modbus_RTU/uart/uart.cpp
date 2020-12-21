@@ -1,6 +1,7 @@
 #include "uart.h"
 
 
+static int Baud_array[UART_BARD_BUF_SIZE] = { 9600, 14400, 19200, 38400, 57600, 115200 };
 
 HANDLE uart_open(const char *path, int sizeBufferIn, int sizeBufferOut)
 {
@@ -16,8 +17,6 @@ HANDLE uart_open(const char *path, int sizeBufferIn, int sizeBufferOut)
 	{
 		return NULL;
 	}
-
-	
 
 
 	if (SetupComm(ComInfo, sizeBufferIn, sizeBufferOut))
@@ -59,34 +58,90 @@ bool uart_config(HANDLE ComInfo, UartConfig_t *uartConfigBuf)
 	return SetCommState(ComInfo, &dcb);
 }
 
+void baud_buf_printf(void)
+{
+	printf("\n==============================\n");
+	for (int i = 0; i < UART_BARD_BUF_SIZE; i++)
+	{
+		printf("%d\t", Baud_array[i]);
+	}
+	printf("\n==============================\n");
+}
+
 int uart_buf_input(UartConfig_t *uartBuf)
 {
 	int in = 0;
 
-	printf("Baud>");
-	scanf("%d", &in);
-	uartBuf->Band = in;
-	while (getchar() != '\n'){}
-	memset(&in, 0, sizeof(in));
+	while (1)
+	{
+		printf("Baud>(1 - 6)");
+		baud_buf_printf();
+		scanf("%d", &in);
+		if (in < 1 || in > 6)
+		{
+			printf("input error\n");
+			continue;
+		}
 
-	printf("Parity>");
-	scanf("%d", &in);
-	uartBuf->Parity = in;
-	while (getchar() != '\n'){}
-	memset(&in, 0, sizeof(in));
+		uartBuf->Band = Baud_array[in-1];
+		while (getchar() != '\n'){}
+		memset(&in, 0, sizeof(in));
+		break;
+	}
 
+	while (1)
+	{
+		printf("Parity(0, 1, 2, 3, 4)>");
+		scanf("%d", &in);
+		
+		if (0 == in || 1 == in || 2 == in || 3 == in || 4 == in)
+		{
 
-	printf("ByteSize>");
-	scanf("%d", &in);
-	uartBuf->ByteSize = in;
-	while (getchar() != '\n'){}
-	memset(&in, 0, sizeof(in));
+		}
+		else
+		{
+			printf("input error\n");
+			continue;
+		}
 
-	printf("StopSize>");
-	scanf("%d", &in);
-	uartBuf->StopSize = in - 1;
-	while (getchar() != '\n'){}
-	memset(&in, 0, sizeof(in));
+		uartBuf->Parity = in;
+		while (getchar() != '\n'){}
+		memset(&in, 0, sizeof(in));
+		break;
+	}
+
+	while (1)
+	{
+		printf("ByteSize(5-8)>");
+		scanf("%d", &in);
+
+		if (in < 5 || in > 8)
+		{
+			printf("input error\n");
+			continue;
+		}
+
+		uartBuf->ByteSize = in;
+		while (getchar() != '\n'){}
+		memset(&in, 0, sizeof(in));
+		break;
+	}
+
+	while (1)
+	{
+		printf("StopSize(0->1bit , 1->1.5bit, 2->2bit)>");
+		scanf("%d", &in);
+		if (in < 0 || in > 2)
+		{
+			printf("input error\n");
+			continue;
+		}
+
+		uartBuf->StopSize = in;
+		while (getchar() != '\n'){}
+		memset(&in, 0, sizeof(in));
+		break;
+	}
 
 	return 0;
 }
