@@ -54,79 +54,15 @@ AGAIN_INPUT_COM://跳转重新输入的位置
 	char chIn = 0;
 	
 	DWORD errs = 0;
-	while (1)//循环询问用户配置串口
+
+	//用户选择配置串口数据
+	if (-1 == uart_module_choose(&uartBuf, COMM, COM_NAME))
 	{
-		cout << "do you want the uart set as default(y equal default)";
+		printf("Thank for using RTU poll~~~~~~~\n");
 
-		if (cin >> chIn)
-		{
-			while (getchar() != '\n'){}
-			if (chIn == 'y' || chIn == 'Y')
-			{
-				//默认串口配置
-				uartBuf.Band = CBR_9600;
-				uartBuf.ByteSize = 8;
-				uartBuf.Parity = NOPARITY;
-				uartBuf.StopSize = ONESTOPBIT;
-			}
-			else
-			{
-				//用户自定义串口
-				uart_buf_input(&uartBuf);
-			}
-		}
+		system("pause");
 
-		if (uart_config(COMM, &uartBuf))//配置成功就退出循环
-		{
-			printf("config %s succeefully\n", COM_NAME);
-
-			break;
-		}
-		else
-		{
-			printf("config %s failed\n", COM_NAME);
-
-			if (GetLastError() == 5)//如果是5，表明串口断开了
-			{	
-				cout << "串口断开" << endl;
-
-				//关闭句柄
-				CloseHandle(COMM);
-
-				while (1)
-				{
-					printf("正在请求重连串口\r");
-					Sleep(1000);
-					if ((COMM = uart_open(COM_NAME, UART_BUF_SIZE_IN, UART_BUF_SIZE_IN)) == nullptr)
-					{
-						continue;
-					}
-					else
-					{
-						printf("\n重连串口成功\n");
-						break;
-					}
-				}
-
-				//设置超时
-				//设置超时
-				if (!uart_set_timeout(COMM))
-					cout << "set timeout failed" << endl;
-			}	
-		}
-
-		cout << "input '#' continue to config com >";
-
-		cin >> chIn;
-		while (getchar() != '\n'){}
-
-		if (chIn != '#')
-		{
-			cout << "thanks for use RTU-slave" << endl;
-			system("pause");
-
-			return -1;
-		}
+		return -1;
 	}
 
 	//备份串口的属性

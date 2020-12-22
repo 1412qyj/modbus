@@ -34,5 +34,6 @@ int PrintuartMsg(self_uart_msg *msg);
 void uart_print_timeout(COMMTIMEOUTS *TimeOuts);
 bool uart_set_timeout(HANDLE ComInfo);
 void baud_buf_printf(void);
+int uart_module_choose(UartConfig_t *uartBuf, HANDLE COMM, const char *COM_NAME);
 
 #endif
